@@ -4,30 +4,34 @@ __pycache__/
 *$py.class
 *.so
 .Python
-*.egg-info/
-dist/
 build/
+dist/
+*.egg-info/
+.eggs/
 
-# Config files with secrets
-config.local.yaml
-email_config.json
-
-# Output files (generated)
-output/*.html
-output/*.md
-
-# Logs
-logs/*.log
+# Virtual env
+venv/
+.venv/
+env/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+
+# Config (secrets)
+config.local.yaml
+
+# Output
+output/
+data/
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Lock files
-.issue_counter.lock
+# Logs
+*.log
+logs/

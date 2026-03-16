@@ -1,0 +1,345 @@
+/* ====================================
+   LunaClaw Brief — Design System
+   ==================================== */
+
+:root {
+    --bg: #0f172a;
+    --bg-card: #1e293b;
+    --bg-card-hover: #273548;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent: #f97316;
+    --accent-light: #fdba74;
+    --border: #334155;
+    --claw-bg: #2d1b0e;
+    --claw-border: #f97316;
+    --gradient-start: #f97316;
+    --gradient-end: #ef4444;
+    --link: #60a5fa;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.3);
+    --font: -apple-system, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+    --font-mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.75;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* --- Header --- */
+.report-header {
+    text-align: center;
+    padding: 60px 20px 40px;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1a1a2e 100%);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+}
+
+.report-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 40%, rgba(249,115,22,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(239,68,68,0.06) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.report-header .logo {
+    font-size: 48px;
+    margin-bottom: 8px;
+    position: relative;
+}
+
+.luna-logo-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 2px solid rgba(249,115,22,0.4);
+    box-shadow: 0 0 20px rgba(249,115,22,0.15);
+}
+
+.luna-footer-img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+.report-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+    position: relative;
+}
+
+.report-header .issue-badge {
+    display: inline-block;
+    padding: 4px 16px;
+    border-radius: 100px;
+    background: rgba(249,115,22,0.15);
+    border: 1px solid rgba(249,115,22,0.3);
+    color: var(--accent-light);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.report-header .meta-line {
+    color: var(--text-muted);
+    font-size: 13px;
+    position: relative;
+}
+
+.report-header .meta-line span {
+    margin: 0 8px;
+}
+
+/* --- Stats Bar --- */
+.stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.stat-item .stat-num {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 16px;
+}
+
+/* --- Main Layout --- */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+}
+
+/* --- Section --- */
+.section {
+    margin-bottom: 40px;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+}
+
+.section-icon {
+    font-size: 22px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+}
+
+.section-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* --- Item Block --- */
+.item-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.item-block:hover {
+    border-color: rgba(249,115,22,0.3);
+    background: var(--bg-card-hover);
+}
+
+.item-block h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.item-block h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 10px 0 4px;
+}
+
+.item-block p {
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+}
+
+.item-block ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 8px 0;
+}
+
+.item-block ul li {
+    padding: 6px 0 6px 20px;
+    position: relative;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.item-block ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* --- Claw 锐评 Card --- */
+.claw-card {
+    background: var(--claw-bg);
+    border: 1px solid var(--claw-border);
+    border-left: 3px solid var(--claw-border);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    margin: 12px 0 8px;
+}
+
+.claw-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.claw-card p {
+    color: var(--accent-light);
+    font-size: 14px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* --- Links --- */
+a {
+    color: var(--link);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+a:hover {
+    border-bottom-color: var(--link);
+}
+
+/* --- Strong / Em --- */
+strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+em {
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+/* --- Footer --- */
+.report-footer {
+    text-align: center;
+    padding: 32px 20px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 2;
+}
+
+.report-footer .claw-logo {
+    font-size: 28px;
+    margin-bottom: 4px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 640px) {
+    .report-header { padding: 40px 16px 28px; }
+    .report-header h1 { font-size: 22px; }
+    .container { padding: 20px 16px 60px; }
+    .item-block { padding: 16px; }
+    .stats-bar { gap: 12px; padding: 12px 16px; }
+}
+
+/* --- Finance Disclaimer --- */
+.disclaimer {
+    margin-top: 40px;
+    padding: 16px 20px;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.8;
+    text-align: center;
+}
+
+/* --- Finance Section Icons (extra) --- */
+.section-finance-macro .section-icon { background: rgba(59,130,246,0.15); }
+.section-finance-strategy .section-icon { background: rgba(16,185,129,0.15); }
+.section-finance-risk .section-icon { background: rgba(239,68,68,0.15); }
+
+/* --- Print / PDF --- */
+@media print {
+    body { background: #fff; color: #1a1a1a; font-size: 12px; }
+    .report-header { background: #fff; border-bottom: 2px solid #e5e7eb; }
+    .report-header h1 { -webkit-text-fill-color: #f97316; background: none; }
+    .item-block { background: #fafafa; border: 1px solid #e5e7eb; }
+    .claw-card { background: #fff7ed; border-color: #f97316; }
+    .claw-card p { color: #9a3412; }
+    .section-icon { background: #f8fafc; }
+    a { color: #2563eb; }
+    strong { color: #1a1a1a; }
+    p, li { color: #374151; }
+    h2 { color: #1a1a1a; }
+    h3 { color: #1a1a1a; }
+}
