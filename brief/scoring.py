@@ -68,6 +68,23 @@ TAG_RULES: dict[str, list[str]] = {
         "semiconductor", "chip", "nvidia", "tsmc", "intel",
         "foundry", "wafer", "gpu shortage",
     ],
+    # ── Regional Stock Markets ──
+    "A-Share": [
+        "a股", "沪深", "上证", "深证", "创业板", "科创板", "北交所",
+        "a-share", "shanghai", "shenzhen", "csi 300", "沪深300",
+        "北向资金", "融资融券", "板块轮动",
+    ],
+    "HK-Stock": [
+        "港股", "恒生", "恒指", "hkex", "hang seng",
+        "南向资金", "港股通", "h-share",
+        "alibaba", "tencent", "中概股",
+    ],
+    "US-Stock": [
+        "s&p 500", "nasdaq", "dow jones", "nyse",
+        "us stock", "wall street", "faang",
+        "apple", "nvidia", "microsoft", "google",
+        "tesla", "amazon", "meta",
+    ],
 }
 
 

@@ -3,11 +3,23 @@
 {% block stats %}
 {% if stats %}
 <div class="stats-bar">
-    <div class="stat-item">📊 素材 <span class="stat-num">{{ stats.total_items }}</span> 条</div>
-    <div class="stat-item">🔗 数据源 <span class="stat-num">{{ stats.sources_used }}</span> 个</div>
-    <div class="stat-item">✅ 入选 <span class="stat-num">{{ stats.selected_items }}</span> 条</div>
+    <div class="stat-card">
+        <span class="stat-num">{{ stats.total_items }}</span>
+        <span class="stat-label">Sources</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-num">{{ stats.sources_used }}</span>
+        <span class="stat-label">Feeds</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-num">{{ stats.selected_items }}</span>
+        <span class="stat-label">Selected</span>
+    </div>
     {% if stats.word_count %}
-    <div class="stat-item">📝 <span class="stat-num">{{ stats.word_count }}</span> 字</div>
+    <div class="stat-card">
+        <span class="stat-num">{{ stats.word_count }}</span>
+        <span class="stat-label">Words</span>
+    </div>
     {% endif %}
 </div>
 {% endif %}
@@ -15,7 +27,7 @@
 
 {% block content %}
 {% for section in sections %}
-<div class="section">
+<div class="section {{ section.css_class }}">
     <div class="section-header">
         <div class="section-icon">{{ section.icon }}</div>
         <h2>{{ section.title }}</h2>
@@ -27,8 +39,6 @@
 {% endfor %}
 
 <div class="disclaimer">
-    ⚠️ 免责声明：本报告仅供参考，不构成任何投资建议。投资者应独立判断并承担投资风险。
-    <br>
-    Disclaimer: This report is for informational purposes only and does not constitute investment advice.
+    ⚠️ 免责声明：本简报由 AI 自动生成，仅供参考，不构成投资建议。投资有风险，入市需谨慎。
 </div>
 {% endblock %}

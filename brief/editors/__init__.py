@@ -8,6 +8,7 @@ The factory resolves preset.editor_type → Editor class at runtime.
 import brief.editors.weekly   # noqa: F401
 import brief.editors.daily    # noqa: F401
 import brief.editors.finance  # noqa: F401
+import brief.editors.stock    # noqa: F401
 
 from brief.models import PresetConfig
 from brief.editors.base import BaseEditor

@@ -1,32 +1,39 @@
 name: lunaclaw-brief
-version: 3.0.0
+version: 4.0.0
 description: |
   LunaClaw Brief — Pluggable AI-powered report engine.
-  Supports tech weekly/daily and finance weekly/daily presets.
-  Features plugin registry, 8-stage pipeline, and beautiful HTML/PDF output.
+  7 built-in presets (tech/finance/stock), 8 data sources, hybrid LLM intent router,
+  streaming output, cron scheduler, multi-channel delivery (email/webhook),
+  and custom preset generation via natural language.
 
 triggers:
   - "生成周报"
   - "生成日报"
   - "生成金融周报"
   - "生成金融日报"
+  - "生成A股日报"
+  - "生成港股日报"
+  - "生成美股日报"
   - "generate weekly report"
   - "generate daily brief"
   - "generate finance report"
+  - "generate A-share brief"
+  - "generate HK stock brief"
+  - "generate US stock brief"
 
 config:
   preset:
     type: string
     default: "ai_cv_weekly"
-    description: "Preset: ai_cv_weekly | ai_daily | finance_weekly | finance_daily"
+    description: "Preset: ai_cv_weekly | ai_daily | finance_weekly | finance_daily | stock_a_daily | stock_hk_daily | stock_us_daily | <custom>"
   hint:
     type: string
     default: ""
-    description: "Extra hint for LLM editor"
+    description: "Extra hint for LLM editor (also used for hybrid intent routing)"
   send_email:
     type: boolean
     default: false
-    description: "Send report via email after generation"
+    description: "Send report via email/webhook after generation"
 
 outputs:
   - name: html_path

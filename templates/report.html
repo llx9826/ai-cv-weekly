@@ -3,20 +3,12 @@
 {% block stats %}
 {% if stats %}
 <div class="stats-bar">
+    {% for key, value in stats.items() %}
     <div class="stat-card">
-        <span class="stat-num">{{ stats.total_items }}</span>
-        <span class="stat-label">Sources</span>
+        <span class="stat-num">{{ value }}</span>
+        <span class="stat-label">{{ key | replace("_", " ") | title }}</span>
     </div>
-    <div class="stat-card">
-        <span class="stat-num">{{ stats.selected_items }}</span>
-        <span class="stat-label">Selected</span>
-    </div>
-    {% if stats.word_count %}
-    <div class="stat-card">
-        <span class="stat-num">{{ stats.word_count }}</span>
-        <span class="stat-label">Words</span>
-    </div>
-    {% endif %}
+    {% endfor %}
 </div>
 {% endif %}
 {% endblock %}
@@ -33,4 +25,10 @@
     </div>
 </div>
 {% endfor %}
+
+{% if show_disclaimer %}
+<div class="disclaimer">
+    ⚠️ 免责声明：本简报由 AI 自动生成，仅供参考，不构成投资建议。投资有风险，入市需谨慎。
+</div>
+{% endif %}
 {% endblock %}

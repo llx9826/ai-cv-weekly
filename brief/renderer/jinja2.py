@@ -49,8 +49,7 @@ class Jinja2Renderer:
         time_range: str,
         stats: dict,
     ) -> dict:
-        template_name = f"{preset.template}.html"
-        template = self.env.get_template(template_name)
+        template = self.env.get_template("report.html")
         sections = parse_sections(draft.markdown)
         luna_logo_b64 = self._load_logo_b64()
 
@@ -63,6 +62,7 @@ class Jinja2Renderer:
             sections=sections,
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M"),
             luna_logo_b64=luna_logo_b64,
+            show_disclaimer=getattr(preset, "show_disclaimer", False),
         )
 
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")

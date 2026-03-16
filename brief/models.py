@@ -149,4 +149,8 @@ class PresetConfig:
     dedup_window_days: int = 30
 
     # Rendering
-    template: str = "weekly"
+    template: str = "report"
+
+    # Metadata
+    description: str = ""
+    show_disclaimer: bool = False

@@ -14,15 +14,14 @@
         {% if luna_logo_b64 %}
         <img src="data:image/png;base64,{{ luna_logo_b64 }}" alt="Luna" class="luna-logo-img">
         {% else %}
-        🦞
+        <span style="font-size:56px">🦞</span>
         {% endif %}
     </div>
-    <h1>{{ display_name }}</h1>
-    <div class="issue-badge">Issue #{{ issue_number }}</div>
+    <h1>{{ display_name }}<span class="vol-badge">VOL.{{ issue_number }}</span></h1>
     <div class="meta-line">
-        <span>📅 {{ time_range }}</span>
-        <span>·</span>
-        <span>⏱ {{ generated_at }}</span>
+        <span>{{ time_range }}</span>
+        <span class="sep"></span>
+        <span>{{ generated_at }}</span>
     </div>
 </header>
 {% endblock %}
@@ -34,15 +33,15 @@
 </main>
 
 <footer class="report-footer">
-    <div class="claw-logo">
+    <div class="footer-divider">
         {% if luna_logo_b64 %}
         <img src="data:image/png;base64,{{ luna_logo_b64 }}" alt="Luna" class="luna-footer-img">
         {% else %}
-        🦞
+        <span>🦞</span>
         {% endif %}
     </div>
-    <div><strong>LunaClaw Brief</strong> — AI-Powered Intelligent Report Engine</div>
-    <div>Powered by LLM · Built with ❤️ by llx &amp; Luna 🐱</div>
+    <div class="footer-brand">LunaClaw Brief</div>
+    <div class="footer-sub">AI-Powered Report Engine · by llx &amp; Luna</div>
 </footer>
 
 </body>

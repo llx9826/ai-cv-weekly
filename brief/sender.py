@@ -1,8 +1,11 @@
-"""LunaClaw Brief — Email sending.
+"""LunaClaw Brief — Delivery (Email + Webhook)
 
-SMTP-based email delivery with support for HTML content and PDF attachments.
+Supports two delivery channels:
+  - EmailSender:   SMTP-based email with HTML + PDF attachment
+  - WebhookSender: HTTP POST to arbitrary webhook URLs (Slack, DingTalk, etc.)
 """
 
+import json
 import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -11,6 +14,8 @@ from email.mime.base import MIMEBase
 from email.header import Header
 from email import encoders
 from pathlib import Path
+
+import requests
 
 
 class EmailSender:
@@ -34,7 +39,7 @@ class EmailSender:
         else:
             recipients = self.config.get("to_emails", [])
         if not recipients:
-            print("[Email] 未配置收件人")
+            print("[Email] No recipients configured")
             return False
 
         try:
@@ -60,7 +65,7 @@ class EmailSender:
                     part.add_header("Content-Disposition", f'attachment; filename="{filename}"')
                     msg.attach(part)
                 except Exception as e:
-                    print(f"⚠️ 附件添加失败：{e}")
+                    print(f"[Email] Attachment failed: {e}")
 
             smtp_host = self.config["smtp_host"]
             smtp_port = self.config.get("smtp_port", 465)
@@ -70,9 +75,71 @@ class EmailSender:
                 server.login(sender_email, password)
                 server.sendmail(sender_email, recipients, msg.as_string())
 
-            print(f"✅ 邮件已发送 → {', '.join(recipients)}")
+            print(f"✅ Email sent → {', '.join(recipients)}")
             return True
 
         except Exception as e:
-            print(f"❌ 邮件发送失败：{type(e).__name__}: {e}")
+            print(f"❌ Email failed: {type(e).__name__}: {e}")
             return False
+
+
+class WebhookSender:
+    """HTTP webhook delivery for Slack, DingTalk, Feishu, custom endpoints."""
+
+    def __init__(self, webhook_config: dict):
+        self.url = webhook_config.get("url", "")
+        self.webhook_type = webhook_config.get("type", "generic")
+        self.timeout = webhook_config.get("timeout", 30)
+
+    def send(self, subject: str, text_content: str, html_path: str = "") -> bool:
+        """POST report summary to the webhook endpoint."""
+        if not self.url:
+            print("[Webhook] No URL configured")
+            return False
+
+        try:
+            payload = self._build_payload(subject, text_content, html_path)
+            resp = requests.post(
+                self.url,
+                json=payload,
+                headers={"Content-Type": "application/json"},
+                timeout=self.timeout,
+            )
+            if resp.status_code in (200, 201, 204):
+                print(f"✅ Webhook delivered → {self.webhook_type}")
+                return True
+            print(f"❌ Webhook failed: {resp.status_code} - {resp.text[:100]}")
+            return False
+        except Exception as e:
+            print(f"❌ Webhook error: {type(e).__name__}: {e}")
+            return False
+
+    def _build_payload(self, subject: str, text_content: str, html_path: str) -> dict:
+        truncated = text_content[:2000]
+
+        if self.webhook_type == "slack":
+            return {
+                "text": f"*{subject}*\n\n{truncated}",
+            }
+        elif self.webhook_type == "dingtalk":
+            return {
+                "msgtype": "markdown",
+                "markdown": {
+                    "title": subject,
+                    "text": f"## {subject}\n\n{truncated}",
+                },
+            }
+        elif self.webhook_type == "feishu":
+            return {
+                "msg_type": "interactive",
+                "card": {
+                    "header": {"title": {"content": subject, "tag": "plain_text"}},
+                    "elements": [{"tag": "div", "text": {"content": truncated, "tag": "plain_text"}}],
+                },
+            }
+        else:
+            return {
+                "subject": subject,
+                "content": truncated,
+                "html_path": html_path,
+            }
