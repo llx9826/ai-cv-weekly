@@ -27,6 +27,10 @@ config.local.yaml
 # Output
 output/
 data/
+!data/golden/
+
+# Internal docs
+ARCHITECTURE_ANALYSIS_AND_ACCEPTANCE.md
 
 # OS
 .DS_Store

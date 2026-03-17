@@ -91,21 +91,90 @@ class EntityGrounder(GroundingChecker):
         return GroundingResult(passed=score >= 0.3, score=score, issues=issues)
 
 
-class NumericGrounder(GroundingChecker):
-    """Flags numeric claims (percentages, dollar amounts) not found in sources."""
+class FactTableGrounder(GroundingChecker):
+    """Verifies numeric claims against the Fact Table (deterministic verification).
+
+    When a FactTable is available, extracts all numeric claims from the report
+    and checks each against the verified fact values. Claims not traceable to
+    the fact table are flagged.
+
+    Falls back to source-text matching when no FactTable is provided (legacy).
+    """
     name = "numeric"
 
     _NUM_PATTERN = re.compile(
-        r"(?:[\$¥€£])\s*[\d,.]+[万亿BMKT]?|"  # Currency
-        r"[\d,.]+\s*%|"                          # Percentages
-        r"[\d,.]+\s*(?:亿|万|billion|million|trillion)"  # Large numbers
+        r"(?:[\$¥€£])\s*[\d,.]+[万亿BMKT]?|"  # Currency amounts
+        r"[+-]?[\d,.]+\s*%|"                     # Percentages (with sign)
+        r"[+-]?[\d,.]+\s*(?:亿|万|billion|million|trillion)|"  # Large numbers
+        r"[\d,]+\.[\d]+(?:点|元)"                # Decimal with unit
     )
 
-    def check(self, markdown: str, items: list[Item]) -> GroundingResult:
-        source_text = " ".join(f"{item.title} {item.raw_text}" for item in items)
+    def __init__(self, fact_table=None):
+        self._fact_table = fact_table
 
-        report_nums = set(m.group(0).strip() for m in self._NUM_PATTERN.finditer(markdown))
-        source_nums = set(m.group(0).strip() for m in self._NUM_PATTERN.finditer(source_text))
+    def check(self, markdown: str, items: list[Item]) -> GroundingResult:
+        report_nums = set(
+            m.group(0).strip() for m in self._NUM_PATTERN.finditer(markdown)
+        )
+
+        if not report_nums:
+            return GroundingResult(passed=True, score=1.0)
+
+        if self._fact_table is not None and not self._fact_table.is_empty:
+            return self._check_against_facts(report_nums, markdown)
+
+        return self._check_against_sources(report_nums, items)
+
+    def _check_against_facts(
+        self, report_nums: set[str], markdown: str
+    ) -> GroundingResult:
+        """Deterministic claim-level verification against the Fact Table."""
+        fact_values = set()
+        for f in self._fact_table.facts:
+            fact_values.add(f.value)
+            for token in _extract_num_core(f.value):
+                fact_values.add(token)
+
+        issues: list[GroundingIssue] = []
+        grounded_count = 0
+
+        for num in report_nums:
+            core = _extract_num_core(num)
+            is_grounded = any(c in fact_values for c in core) if core else False
+
+            if not is_grounded and self._fact_table.has_value(num):
+                is_grounded = True
+
+            if is_grounded:
+                grounded_count += 1
+            else:
+                issues.append(GroundingIssue(
+                    checker=self.name,
+                    severity="warning",
+                    message=f"Numeric claim not in Fact Table: {num}",
+                    span=num,
+                ))
+
+        total = len(report_nums)
+        grounded_ratio = grounded_count / total if total else 1.0
+        score = grounded_ratio
+
+        passed = grounded_ratio >= 0.3
+        if len(issues) > 10 and grounded_ratio < 0.2:
+            passed = False
+            for issue in issues[:5]:
+                issue.severity = "error"
+
+        return GroundingResult(passed=passed, score=score, issues=issues)
+
+    def _check_against_sources(
+        self, report_nums: set[str], items: list[Item]
+    ) -> GroundingResult:
+        """Legacy fallback: check against source text when no Fact Table."""
+        source_text = " ".join(f"{item.title} {item.raw_text}" for item in items)
+        source_nums = set(
+            m.group(0).strip() for m in self._NUM_PATTERN.finditer(source_text)
+        )
 
         issues: list[GroundingIssue] = []
         for num in report_nums:
@@ -120,6 +189,16 @@ class NumericGrounder(GroundingChecker):
         total = len(report_nums) or 1
         score = max(1.0 - len(issues) / total * 0.5, 0.0)
         return GroundingResult(passed=True, score=score, issues=issues)
+
+
+def _extract_num_core(value: str) -> list[str]:
+    """Extract the core numeric substring(s) from a value string."""
+    cores: list[str] = []
+    for m in re.finditer(r"[\d,.]+", value):
+        raw = m.group(0).replace(",", "").rstrip(".")
+        if raw:
+            cores.append(raw)
+    return cores
 
 
 class StructureGrounder(GroundingChecker):

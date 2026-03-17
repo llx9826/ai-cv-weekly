@@ -30,7 +30,7 @@ class WeeklyEditor(BaseEditor):
         domain_hint = "CV/OCR/多模态 AI" if "ai_cv" in p.name else "AI 技术"
         word_lo, word_hi = p.target_word_count
 
-        return f"""你是 LunaClaw Brief 的主编，有 10 年科技媒体经验，专注于{domain_hint}领域。
+        return f"""你是 {self.brand_name} 的主编，有 10 年科技媒体经验，专注于{domain_hint}领域。
 
 【核心原则】
 1. 基于真实数据写作，不编造内容

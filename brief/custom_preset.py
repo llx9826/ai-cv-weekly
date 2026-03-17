@@ -18,7 +18,7 @@ from brief.llm import LLMClient
 from brief.registry import SourceRegistry
 
 
-_SYSTEM_PROMPT = """You are a report configuration generator for LunaClaw Brief.
+_SYSTEM_PROMPT = """You are a report configuration generator for ClawCat Brief.
 Given a user's description of their reporting needs, generate a PresetConfig JSON.
 
 Available source adapters: {sources}

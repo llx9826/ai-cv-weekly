@@ -49,11 +49,25 @@ class Jinja2Renderer:
         time_range: str,
         stats: dict,
         brand: dict | None = None,
+        citations: list | None = None,
     ) -> dict:
         template = self.env.get_template("report.html")
         sections = parse_sections(draft.markdown)
         luna_logo_b64 = self._load_logo_b64()
         brand = brand or {}
+
+        citation_list = []
+        if citations:
+            for i, c in enumerate(citations, 1):
+                citation_list.append({
+                    "idx": i,
+                    "claim": getattr(c, "claim", str(c)),
+                    "evidence": getattr(c, "evidence", ""),
+                    "source_name": getattr(c, "source_name", ""),
+                    "source_url": getattr(c, "source_url", ""),
+                    "fact_key": getattr(c, "fact_key", ""),
+                    "confidence": getattr(c, "confidence", 0),
+                })
 
         html = template.render(
             title=f"{preset.display_name} — {draft.issue_label}",
@@ -68,6 +82,7 @@ class Jinja2Renderer:
             brand_full_name=brand.get("full_name", "ClawCat Brief"),
             brand_tagline=brand.get("tagline", "AI-Powered Report Engine"),
             brand_author=brand.get("author", "by llx & Luna"),
+            citations=citation_list,
         )
 
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")

@@ -92,13 +92,19 @@ class Scorer:
 
         result: list[ScoredItem] = []
         for i, item in enumerate(filtered):
-            composite = sum(
-                self._weights.get(d.name, 0) * norm_scores[d.name][i]
-                for d in self._dimensions
-            )
+            breakdown: dict[str, float] = {}
+            composite = 0.0
+            for d in self._dimensions:
+                w = self._weights.get(d.name, 0)
+                ns = norm_scores[d.name][i]
+                breakdown[d.name] = round(ns, 4)
+                composite += w * ns
+
             text = f"{item.title} {item.raw_text}".lower()
             tags = self._assign_tags(text)
-            result.append(ScoredItem(item=item, score=composite, tags=tags))
+            si = ScoredItem(item=item, score=round(composite, 4), tags=tags)
+            si.item.meta["score_breakdown"] = breakdown
+            result.append(si)
 
         return result
 

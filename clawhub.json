@@ -1,8 +1,8 @@
 {
   "name": "lunaclaw-brief",
   "display_name": "ClawCat Brief",
-  "version": "6.0.0",
-  "description": "Protocol-driven AI report engine: Scoring v2 (BM25+MMR), 4-checker grounding system, token budget manager, multi-model LLM router, async parallel fetch, three-level memory, 9 editors, 10 data sources (incl. RSS + OpenClaw skill adapter), configurable brand, financial-terminal dark theme.",
+  "version": "7.0.0",
+  "description": "Config-driven AI report engine with high-certainty pipeline: QualityGate (pass/retry/degrade/block), Fact Table + Grounding, Citation traceability (claim→evidence→source) in HTML/PDF, Golden Set regression runner, full pipeline observability, Scoring v2 (BM25+MMR+CJK), multi-model LLM router, 9 editors, 10+ data sources, configurable brand & gate thresholds.",
   "category": "productivity",
   "tags": [
     "report",

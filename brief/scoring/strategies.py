@@ -10,9 +10,39 @@ Implementations:
 
 from __future__ import annotations
 
+import re
 from abc import ABC, abstractmethod
 
 from brief.models import ScoredItem
+
+_CJK_RE = re.compile(r"[\u4e00-\u9fff\u3400-\u4dbf]")
+
+
+def _text_to_shingles(text: str, n: int = 2) -> set[str]:
+    """Extract character n-gram shingles that work for CJK + Latin mixed text.
+
+    For CJK characters: extract character bigrams directly.
+    For Latin words: extract word-level tokens.
+    Produces a unified set for Jaccard similarity.
+    """
+    text = text.lower()
+    shingles: set[str] = set()
+
+    for word in text.split():
+        if _CJK_RE.search(word):
+            chars = [c for c in word if not c.isspace()]
+            for i in range(len(chars) - n + 1):
+                shingles.add("".join(chars[i:i + n]))
+            if len(chars) == 1:
+                shingles.add(chars[0])
+        else:
+            shingles.add(word)
+
+    cjk_only = "".join(_CJK_RE.findall(text))
+    for i in range(len(cjk_only) - n + 1):
+        shingles.add(cjk_only[i:i + n])
+
+    return shingles
 
 
 class SelectionStrategy(ABC):
@@ -38,7 +68,8 @@ class MMRStrategy(SelectionStrategy):
 
     MMR = lambda * relevance - (1 - lambda) * max_similarity_to_selected
 
-    Uses keyword-overlap Jaccard similarity as the diversity metric.
+    Uses character-shingle Jaccard similarity as the diversity metric,
+    which works correctly for both CJK and Latin text.
     """
     name = "mmr"
 
@@ -51,11 +82,10 @@ class MMRStrategy(SelectionStrategy):
 
         max_score = max(si.score for si in items) or 1.0
 
-        item_keywords: list[set[str]] = []
+        item_shingles: list[set[str]] = []
         for si in items:
-            text = f"{si.item.title} {si.item.raw_text}".lower()
-            kw = set(text.split())
-            item_keywords.append(kw)
+            text = f"{si.item.title} {si.item.raw_text}"
+            item_shingles.append(_text_to_shingles(text))
 
         selected: list[int] = []
         remaining = set(range(len(items)))
@@ -73,8 +103,8 @@ class MMRStrategy(SelectionStrategy):
 
                 max_sim = 0.0
                 for s in selected:
-                    intersection = len(item_keywords[r] & item_keywords[s])
-                    union = len(item_keywords[r] | item_keywords[s])
+                    intersection = len(item_shingles[r] & item_shingles[s])
+                    union = len(item_shingles[r] | item_shingles[s])
                     sim = intersection / union if union else 0.0
                     max_sim = max(max_sim, sim)
 

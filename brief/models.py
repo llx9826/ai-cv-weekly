@@ -1,7 +1,14 @@
-"""LunaClaw Brief — Core Data Models
+"""ClawCat Brief — Core Data Models
 
 Defines the canonical data structures flowing through the pipeline:
   Item → ScoredItem → ReportDraft → QualityResult
+
+Extended with:
+  GateVerdict  — QualityGate decision enum
+  GateResult   — Gate evaluation result
+  Citation     — Claim → Evidence traceability link
+  EvalMetric   — Single evaluation dimension result
+  PipelineTrace — Full observability record
 
 All models are immutable-friendly dataclasses with auto-computed fields.
 """
@@ -10,6 +17,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Optional
 
 
@@ -112,6 +120,32 @@ class ReportRequest:
 
 
 @dataclass
+class Fact:
+    """A single verified data point from a structured source.
+
+    Used by the Fact Table architecture to inject ground-truth numbers
+    into LLM prompts and verify output claims against them.
+
+    Attributes:
+        key:       Canonical identifier (e.g. "sse_composite.change_pct").
+        value:     Human-readable value string (e.g. "+1.23%").
+        label:     Display name (e.g. "上证综指涨跌幅").
+        unit:      Unit of measure (e.g. "%" or "亿" or "点").
+        timestamp: When the data point was captured (ISO-8601).
+        source:    Provider identifier (e.g. "sina_market").
+        category:  Semantic category for grouping in the fact table.
+    """
+
+    key: str
+    value: str
+    label: str = ""
+    unit: str = ""
+    timestamp: str = ""
+    source: str = ""
+    category: str = "general"
+
+
+@dataclass
 class PresetConfig:
     """Full configuration for a report type (preset).
 
@@ -163,3 +197,151 @@ class PresetConfig:
     mmr_lambda: float = 0.7
     max_word_count: int = 0
     target_audience: str = ""
+
+    # Fact Table: structured data sources for grounding (empty = no fact injection)
+    fact_sources: list = field(default_factory=list)
+
+    # Quality Gate thresholds (0 = use defaults based on topic)
+    gate_grounding_pass: float = 0.0
+    gate_grounding_block: float = 0.0
+    gate_max_retries: int = 0
+    gate_block_on_critical: bool = True
+
+    # Eval config: dimension names to enable + custom weights (empty = use defaults)
+    eval_dimensions: list = field(default_factory=list)
+    eval_weights: dict = field(default_factory=dict)
+
+
+# ────────────────────────────────────────────
+# Quality Gate
+# ────────────────────────────────────────────
+
+class GateVerdict(Enum):
+    """Four-state quality gate decision."""
+    PASS = "pass"
+    RETRY = "retry"
+    DEGRADE = "degrade"
+    BLOCK = "block"
+
+
+@dataclass
+class GateResult:
+    """Output of the QualityGate evaluation.
+
+    Attributes:
+        verdict:       The gate decision.
+        grounding_score: Numeric grounding accuracy [0, 1].
+        quality_score:   Structural quality [0, 1].
+        reasons:       Human-readable explanation of the decision.
+        degraded_markdown: If verdict=DEGRADE, the sanitized markdown.
+    """
+    verdict: GateVerdict
+    grounding_score: float = 1.0
+    quality_score: float = 1.0
+    reasons: list[str] = field(default_factory=list)
+    degraded_markdown: str = ""
+    retry_count: int = 0
+
+
+# ────────────────────────────────────────────
+# Citation (Claim → Evidence Traceability)
+# ────────────────────────────────────────────
+
+@dataclass
+class Citation:
+    """A single traceable link from a report claim to its evidence.
+
+    Attributes:
+        claim:       The claim text extracted from the report.
+        evidence:    The source text that supports this claim.
+        source_name: Which data source provided the evidence.
+        source_url:  URL of the original source item (if available).
+        fact_key:    FactTable key if the claim is grounded by a Fact.
+        confidence:  How confident the match is [0, 1].
+    """
+    claim: str
+    evidence: str = ""
+    source_name: str = ""
+    source_url: str = ""
+    fact_key: str = ""
+    confidence: float = 0.0
+
+
+# ────────────────────────────────────────────
+# Evaluation
+# ────────────────────────────────────────────
+
+@dataclass
+class EvalMetric:
+    """Result of a single evaluation dimension."""
+    name: str
+    score: float
+    max_score: float = 1.0
+    detail: str = ""
+
+
+@dataclass
+class EvalResult:
+    """Aggregated evaluation result across all dimensions."""
+    preset: str
+    issue_label: str
+    metrics: list[EvalMetric] = field(default_factory=list)
+    overall_score: float = 0.0
+
+    def __post_init__(self):
+        if self.metrics and self.overall_score == 0.0:
+            self.overall_score = sum(m.score for m in self.metrics) / sum(m.max_score for m in self.metrics)
+
+
+# ────────────────────────────────────────────
+# Observability
+# ────────────────────────────────────────────
+
+@dataclass
+class PipelineTrace:
+    """Full observability record for a single pipeline run.
+
+    Captures everything needed to debug, analyze, and improve
+    the generation pipeline.
+    """
+    preset: str = ""
+    issue_label: str = ""
+    started_at: str = ""
+    completed_at: str = ""
+    elapsed_seconds: float = 0.0
+
+    # Source phase
+    sources_attempted: int = 0
+    sources_succeeded: int = 0
+    items_fetched: int = 0
+    facts_fetched: int = 0
+
+    # Scoring & selection
+    items_scored: int = 0
+    items_selected: int = 0
+    items_deduped: int = 0
+
+    # LLM phase
+    llm_model: str = ""
+    llm_calls: int = 0
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    estimated_cost_usd: float = 0.0
+
+    # Quality
+    grounding_score: float = 0.0
+    quality_score: float = 0.0
+    gate_verdict: str = ""
+    retry_count: int = 0
+    citations_count: int = 0
+    citations_grounded: int = 0
+
+    # Output
+    word_count: int = 0
+    output_html: str = ""
+    output_pdf: str = ""
+    sent_email: bool = False
+    sent_webhook: bool = False
+
+    # Phase timings
+    phase_timings: dict = field(default_factory=dict)

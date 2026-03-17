@@ -576,6 +576,101 @@ em { font-style: italic; color: var(--text-muted); }
 }
 
 /* ═══════════════════════════════════
+   CITATION APPENDIX
+   ═══════════════════════════════════ */
+
+.citation-appendix {
+    margin-top: 36px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.citation-toggle {
+    padding: 12px 18px;
+    background: var(--bg-surface);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+.citation-toggle::-webkit-details-marker { display: none; }
+.citation-toggle::before {
+    content: "▸ ";
+    display: inline-block;
+    transition: transform 0.2s;
+}
+details[open] > .citation-toggle::before { transform: rotate(90deg); }
+
+.citation-table-wrap { overflow-x: auto; }
+
+.citation-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    line-height: 1.6;
+}
+.citation-table thead th {
+    background: var(--accent-dim);
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 10px;
+}
+.citation-table tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-primary);
+    vertical-align: middle;
+}
+.cite-idx { width: 36px; text-align: center; color: var(--text-muted); font-weight: 600; }
+.cite-claim { max-width: 300px; }
+.cite-source a { color: var(--accent); text-decoration: none; }
+.cite-source a:hover { text-decoration: underline; }
+
+.cite-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+.cite-fact { background: rgba(16,185,129,0.15); color: #10b981; }
+.cite-src  { background: rgba(59,130,246,0.15); color: #3b82f6; }
+.cite-none { background: rgba(107,114,128,0.15); color: #6b7280; }
+
+.cite-conf {
+    width: 80px;
+    position: relative;
+    text-align: right;
+    font-weight: 600;
+    font-size: 11px;
+}
+.conf-bar {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 4px;
+    border-radius: 2px;
+    background: var(--accent);
+    opacity: 0.4;
+}
+
+.citation-high td { }
+.citation-mid td { opacity: 0.85; }
+.citation-low td { opacity: 0.55; }
+
+/* ═══════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════ */
 

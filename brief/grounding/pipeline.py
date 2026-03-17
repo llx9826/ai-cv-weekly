@@ -12,7 +12,7 @@ from brief.grounding.protocol import GroundingChecker, GroundingResult
 from brief.grounding.checkers import (
     TemporalGrounder,
     EntityGrounder,
-    NumericGrounder,
+    FactTableGrounder,
     StructureGrounder,
 )
 
@@ -41,10 +41,16 @@ class GroundingPipeline:
         return combined
 
     @classmethod
-    def create_default(cls) -> "GroundingPipeline":
+    def create_default(cls, fact_table=None) -> "GroundingPipeline":
+        """Create the default grounding pipeline.
+
+        When a FactTable is provided, the FactTableGrounder uses it for
+        deterministic numeric claim verification instead of fuzzy source
+        text matching.
+        """
         return cls(checkers=[
             TemporalGrounder(),
             EntityGrounder(),
-            NumericGrounder(),
+            FactTableGrounder(fact_table=fact_table),
             StructureGrounder(),
         ])

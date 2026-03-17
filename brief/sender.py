@@ -46,7 +46,8 @@ class EmailSender:
             msg = MIMEMultipart("mixed")
             msg["Subject"] = Header(subject, "utf-8")
             sender_email = self.config["sender_email"]
-            msg["From"] = f"LunaClaw Brief <{sender_email}>"
+            brand = self.config.get("brand_name", "ClawCat Brief")
+            msg["From"] = f"{brand} <{sender_email}>"
             msg["To"] = ", ".join(recipients)
 
             alt = MIMEMultipart("alternative")

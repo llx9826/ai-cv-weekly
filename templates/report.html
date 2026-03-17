@@ -31,4 +31,44 @@
     ⚠️ 免责声明：本简报由 AI 自动生成，仅供参考，不构成投资建议。投资有风险，入市需谨慎。
 </div>
 {% endif %}
+
+{% if citations %}
+<details class="citation-appendix">
+    <summary class="citation-toggle">📎 数据引用溯源（{{ citations | length }} 条）</summary>
+    <div class="citation-table-wrap">
+        <table class="citation-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>报告声明</th>
+                    <th>证据来源</th>
+                    <th>可信度</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in citations %}
+                <tr class="{{ 'citation-high' if c.confidence >= 0.7 else ('citation-mid' if c.confidence > 0 else 'citation-low') }}">
+                    <td class="cite-idx">{{ c.idx }}</td>
+                    <td class="cite-claim">{{ c.claim[:80] }}{% if c.claim|length > 80 %}…{% endif %}</td>
+                    <td class="cite-source">
+                        {% if c.fact_key %}
+                            <span class="cite-badge cite-fact">Fact</span> {{ c.evidence[:60] }}
+                        {% elif c.source_url %}
+                            <span class="cite-badge cite-src">Source</span>
+                            <a href="{{ c.source_url }}" target="_blank" rel="noopener">{{ c.source_name }}</a>
+                        {% else %}
+                            <span class="cite-badge cite-none">—</span> 未溯源
+                        {% endif %}
+                    </td>
+                    <td class="cite-conf">
+                        <span class="conf-bar" style="width:{{ (c.confidence * 100)|int }}%"></span>
+                        {{ (c.confidence * 100)|int }}%
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</details>
+{% endif %}
 {% endblock %}

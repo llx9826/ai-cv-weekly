@@ -14,7 +14,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Generator
 
-from brief.models import Item, ReportDraft, PresetConfig
+from brief.models import Item, Fact, ReportDraft, PresetConfig
 from brief.llm import LLMClient
 
 _WEEKDAY_CN = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
@@ -29,17 +29,21 @@ class BaseEditor(ABC):
       user prompt. Editor never imports or depends on any memory store directly.
     """
 
-    def __init__(self, preset: PresetConfig, llm: LLMClient):
+    def __init__(self, preset: PresetConfig, llm: LLMClient, brand_name: str = "ClawCat Brief"):
         self.preset = preset
         self.llm = llm
+        self.brand_name = brand_name
 
     def _estimate_max_tokens(self) -> int:
         """Estimate required max_tokens from target_word_count.
 
-        Chinese text averages ~1.8 tokens/char; add 30% buffer for formatting.
+        Chinese text averages ~1.5 tokens/char. Keep a tight 15% buffer
+        so the model is forced to stay concise rather than ramble.
         """
-        hi = self.preset.target_word_count[1] if self.preset.target_word_count else 5000
-        return max(int(hi * 2.2), 4000)
+        hi = self.preset.max_word_count or (
+            self.preset.target_word_count[1] if self.preset.target_word_count else 5000
+        )
+        return max(int(hi * 1.5 * 1.15), 2000)
 
     def generate(
         self,
@@ -47,10 +51,12 @@ class BaseEditor(ABC):
         issue_label: str,
         user_hint: str = "",
         memory_context: dict | None = None,
+        fact_table: object | None = None,
     ) -> ReportDraft | None:
         """Generate a report draft with exponential-backoff retry."""
         system_prompt = self._build_system_prompt()
         user_prompt = self._build_user_prompt(items, issue_label, user_hint)
+        user_prompt += self._format_fact_table(fact_table)
         user_prompt += self._format_memory_prompt(memory_context)
         max_tokens = self._estimate_max_tokens()
 
@@ -82,10 +88,12 @@ class BaseEditor(ABC):
         issue_label: str,
         user_hint: str = "",
         memory_context: dict | None = None,
+        fact_table: object | None = None,
     ) -> Generator[str, None, None]:
         """Stream report generation, yielding Markdown chunks as they arrive."""
         system_prompt = self._build_system_prompt()
         user_prompt = self._build_user_prompt(items, issue_label, user_hint)
+        user_prompt += self._format_fact_table(fact_table)
         user_prompt += self._format_memory_prompt(memory_context)
 
         max_tokens = self._estimate_max_tokens()
@@ -108,6 +116,21 @@ class BaseEditor(ABC):
         self, items: list[Item], issue_label: str, user_hint: str
     ) -> str:
         ...
+
+    @staticmethod
+    def _format_fact_table(fact_table: object | None) -> str:
+        """Inject the Fact Table into the user prompt for grounded generation.
+
+        The FactTable.to_prompt() returns a formatted Markdown table of
+        verified data points with strict constraint instructions.
+        """
+        if fact_table is None:
+            return ""
+        to_prompt = getattr(fact_table, "to_prompt", None)
+        if to_prompt is None:
+            return ""
+        prompt = to_prompt()
+        return prompt if prompt else ""
 
     @staticmethod
     def _format_memory_prompt(memory_context: dict | None) -> str:

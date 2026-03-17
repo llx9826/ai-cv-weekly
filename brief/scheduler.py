@@ -154,7 +154,7 @@ class BriefScheduler:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="LunaClaw Brief Scheduler")
+    parser = argparse.ArgumentParser(description="ClawCat Brief Scheduler")
     parser.add_argument("--run-once", action="store_true", help="Run all jobs once and exit")
     parser.add_argument("--interval", type=int, default=30, help="Check interval in seconds")
     args = parser.parse_args()

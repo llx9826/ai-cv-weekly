@@ -26,7 +26,7 @@ class DailyEditor(BaseEditor):
     def _build_system_prompt(self) -> str:
         word_lo, word_hi = self.preset.target_word_count
 
-        return f"""你是 LunaClaw Brief 的日报主编，擅长用简洁有力的文字概括技术动态。
+        return f"""你是 {self.brand_name} 的日报主编，擅长用简洁有力的文字概括技术动态。
 
 【核心原则】
 1. 基于真实数据写作，不编造

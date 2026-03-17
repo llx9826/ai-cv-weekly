@@ -36,7 +36,7 @@ class GenericDailyEditor(BaseEditor):
         topic_desc = p.description or p.display_name
         topic_name = p.topic or "综合"
 
-        return f"""你是 LunaClaw Brief 的主编，专注于"{topic_name}"领域。
+        return f"""你是 {self.brand_name} 的主编，专注于"{topic_name}"领域。
 你的任务是生成一份高质量的日报。
 
 【报告主题】{topic_desc}
@@ -121,7 +121,7 @@ class GenericWeeklyEditor(BaseEditor):
         topic_desc = p.description or p.display_name
         topic_name = p.topic or "综合"
 
-        return f"""你是 LunaClaw Brief 的周报主编，专注于"{topic_name}"领域，有 10 年行业经验。
+        return f"""你是 {self.brand_name} 的周报主编，专注于"{topic_name}"领域，有 10 年行业经验。
 你的任务是生成一份深度周报。
 
 【报告主题】{topic_desc}

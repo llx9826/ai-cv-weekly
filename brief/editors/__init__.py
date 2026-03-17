@@ -21,10 +21,11 @@ def create_editor(preset: PresetConfig, global_config: dict) -> BaseEditor:
     """Create the appropriate editor based on preset.editor_type via Registry."""
     llm = LLMClient(global_config.get("llm", {}))
     editor_type = preset.editor_type
+    brand_name = global_config.get("brand", {}).get("full_name", "ClawCat Brief")
 
     if EditorRegistry.has(editor_type):
         cls = EditorRegistry.get(editor_type)
-        return cls(preset, llm)
+        return cls(preset, llm, brand_name=brand_name)
 
     raise ValueError(
         f"Editor '{editor_type}' not registered. "
