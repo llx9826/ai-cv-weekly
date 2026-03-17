@@ -1,33 +1,35 @@
 /* ====================================
-   LunaClaw Brief — Design System v2
-   Premium dark-mode newsletter
+   ClawCat Brief — Design System v3
+   Financial Terminal × Premium Dark Mode
    ==================================== */
 
 :root {
-    --bg: #0b1120;
-    --bg-card: #151d2e;
-    --bg-card-hover: #1c2740;
-    --bg-glass: rgba(21,29,46,0.65);
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --text-muted: #546380;
-    --accent: #f97316;
-    --accent-light: #fdba74;
-    --accent-dim: rgba(249,115,22,0.12);
-    --border: rgba(51,65,85,0.5);
-    --border-light: rgba(51,65,85,0.25);
-    --claw-bg: linear-gradient(135deg, #2d1b0e 0%, #1a0f05 100%);
-    --claw-border: #f97316;
-    --gradient-start: #f97316;
-    --gradient-end: #ef4444;
+    --bg: #0a0e1a;
+    --bg-card: #111827;
+    --bg-card-hover: #1a2236;
+    --bg-glass: rgba(17,24,39,0.7);
+    --bg-surface: #0f1525;
+    --text-primary: #e8edf5;
+    --text-secondary: #8b9dc3;
+    --text-muted: #4a5878;
+    --accent: #e5a825;
+    --accent-light: #f0c75e;
+    --accent-dim: rgba(229,168,37,0.08);
+    --accent-glow: rgba(229,168,37,0.15);
+    --border: rgba(51,65,85,0.45);
+    --border-light: rgba(51,65,85,0.22);
+    --claw-bg: linear-gradient(135deg, rgba(229,168,37,0.06) 0%, rgba(17,24,39,0.95) 100%);
+    --claw-border: #e5a825;
+    --gradient-start: #e5a825;
+    --gradient-end: #d97706;
     --link: #60a5fa;
-    --radius: 14px;
-    --radius-sm: 8px;
-    --radius-xs: 6px;
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
-    --shadow: 0 4px 24px rgba(0,0,0,0.35);
-    --shadow-glow: 0 0 30px rgba(249,115,22,0.12);
-    --font: -apple-system, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --radius-xs: 4px;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.3);
+    --shadow: 0 4px 20px rgba(0,0,0,0.4);
+    --shadow-claw: 0 0 24px rgba(229,168,37,0.08);
+    --font: -apple-system, 'SF Pro Display', 'Inter', 'Noto Sans SC', system-ui, sans-serif;
     --font-mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
 
     --color-blue: #3b82f6;
@@ -35,13 +37,13 @@
     --color-red: #ef4444;
     --color-purple: #a855f7;
     --color-cyan: #06b6d4;
-    --color-amber: #f59e0b;
+    --color-amber: #e5a825;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 ::selection {
-    background: rgba(249,115,22,0.3);
+    background: rgba(229,168,37,0.25);
     color: #fff;
 }
 
@@ -49,22 +51,21 @@ body {
     font-family: var(--font);
     background: var(--bg);
     color: var(--text-primary);
-    line-height: 1.8;
+    line-height: 1.78;
     font-size: 14.5px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
 /* ═══════════════════════════════════
-   HEADER
+   HEADER — Terminal-inspired
    ═══════════════════════════════════ */
 
 .report-header {
     text-align: center;
-    padding: 56px 24px 44px;
+    padding: 52px 24px 40px;
     background:
-        radial-gradient(ellipse 60% 50% at 30% 40%, rgba(249,115,22,0.07) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 60% at 75% 55%, rgba(239,68,68,0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 55% at 50% 40%, rgba(229,168,37,0.04) 0%, transparent 70%),
         linear-gradient(180deg, #111827 0%, var(--bg) 100%);
     position: relative;
     overflow: visible;
@@ -73,90 +74,85 @@ body {
 .report-header::after {
     content: '';
     position: absolute;
-    bottom: 0; left: 10%; right: 10%;
+    bottom: 0; left: 5%; right: 5%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(249,115,22,0.35), rgba(239,68,68,0.25), transparent);
+    background: linear-gradient(90deg, transparent 0%, var(--accent) 30%, var(--accent) 70%, transparent 100%);
+    opacity: 0.2;
 }
 
 .report-header .logo {
-    margin-bottom: 16px;
-    position: relative;
+    margin-bottom: 14px;
     line-height: 1;
 }
 
 .luna-logo-img {
-    width: 100px;
+    width: 88px;
     height: auto;
     object-fit: contain;
-    filter: drop-shadow(0 0 20px rgba(249,115,22,0.2));
+    filter: drop-shadow(0 4px 12px rgba(229,168,37,0.15));
 }
 
 .luna-footer-img {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     object-fit: contain;
+    opacity: 0.7;
 }
 
 .report-header h1 {
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 800;
-    letter-spacing: -0.02em;
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
     margin-bottom: 0;
-    position: relative;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .report-header .vol-badge {
     display: inline-block;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     color: var(--accent);
+    border: 1px solid rgba(229,168,37,0.35);
     background: var(--accent-dim);
-    padding: 3px 10px;
-    border-radius: 4px;
-    margin-left: 10px;
-    vertical-align: middle;
+    padding: 2px 10px;
+    border-radius: 3px;
     font-family: var(--font-mono);
+    vertical-align: middle;
     position: relative;
-    top: -2px;
+    top: -1px;
 }
 
 .report-header .meta-line {
     color: var(--text-muted);
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 500;
-    margin-top: 10px;
-    letter-spacing: 0.01em;
-    position: relative;
+    margin-top: 8px;
+    letter-spacing: 0.02em;
+    font-family: var(--font-mono);
 }
 
 .report-header .meta-line .sep {
     display: inline-block;
-    width: 3px; height: 3px;
-    background: var(--text-muted);
-    border-radius: 50%;
+    width: 1px; height: 12px;
+    background: var(--border);
     vertical-align: middle;
-    margin: 0 10px;
-    opacity: 0.6;
+    margin: 0 12px;
 }
 
 /* ═══════════════════════════════════
-   STATS BAR
+   STATS BAR — Dashboard Metrics
    ═══════════════════════════════════ */
 
 .stats-bar {
     display: flex;
     justify-content: center;
-    gap: 12px;
-    padding: 20px 24px;
-    background: rgba(17,24,39,0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    gap: 2px;
+    padding: 0;
+    background: var(--bg-surface);
     border-bottom: 1px solid var(--border-light);
     flex-wrap: wrap;
 }
@@ -165,27 +161,29 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    padding: 10px 20px;
-    background: var(--bg-glass);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-sm);
-    min-width: 80px;
+    gap: 1px;
+    padding: 14px 24px;
+    background: transparent;
+    border-right: 1px solid var(--border-light);
+    min-width: 90px;
 }
 
+.stat-card:last-child { border-right: none; }
+
 .stat-card .stat-num {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 800;
     color: var(--accent);
     font-variant-numeric: tabular-nums;
-    line-height: 1.2;
+    font-family: var(--font-mono);
+    line-height: 1.3;
 }
 
 .stat-card .stat-label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     color: var(--text-muted);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
 }
 
@@ -194,88 +192,117 @@ body {
    ═══════════════════════════════════ */
 
 .container {
-    max-width: 720px;
+    max-width: 700px;
     margin: 0 auto;
-    padding: 40px 20px 80px;
+    padding: 36px 20px 80px;
 }
 
 /* ═══════════════════════════════════
-   SECTIONS
+   SECTIONS — Clean hierarchy
    ═══════════════════════════════════ */
 
 .section {
-    margin-bottom: 48px;
+    margin-bottom: 40px;
 }
 
 .section-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    margin-bottom: 20px;
+    gap: 10px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
     border-left: 3px solid var(--accent);
-    background: linear-gradient(90deg, var(--accent-dim) 0%, transparent 70%);
-    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    background: linear-gradient(90deg, var(--accent-dim) 0%, transparent 50%);
+    border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
 }
 
 .section-icon {
-    font-size: 20px;
-    width: 34px;
-    height: 34px;
+    font-size: 18px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-xs);
-    background: rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.03);
     flex-shrink: 0;
 }
 
 .section-header h2 {
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--text-primary);
-    letter-spacing: 0.01em;
+    letter-spacing: 0.02em;
 }
 
-/* Section color variants — border + gradient */
-.section-core .section-header    { border-left-color: var(--color-amber); background: linear-gradient(90deg, rgba(245,158,11,0.08) 0%, transparent 70%); }
-.section-events .section-header  { border-left-color: var(--color-blue);  background: linear-gradient(90deg, rgba(59,130,246,0.08) 0%, transparent 70%); }
-.section-projects .section-header{ border-left-color: var(--color-green); background: linear-gradient(90deg, rgba(16,185,129,0.08) 0%, transparent 70%); }
-.section-papers .section-header  { border-left-color: var(--color-cyan);  background: linear-gradient(90deg, rgba(6,182,212,0.08) 0%, transparent 70%); }
-.section-trends .section-header  { border-left-color: var(--color-purple);background: linear-gradient(90deg, rgba(168,85,247,0.08) 0%, transparent 70%); }
-.section-review .section-header  { border-left-color: var(--color-red);   background: linear-gradient(90deg, rgba(239,68,68,0.08) 0%, transparent 70%); }
-.section-default .section-header { border-left-color: var(--text-muted);  background: linear-gradient(90deg, rgba(100,116,139,0.06) 0%, transparent 70%); }
+.section-body > p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.85;
+    margin-bottom: 10px;
+}
 
-.section-finance-macro .section-header   { border-left-color: var(--color-blue);  background: linear-gradient(90deg, rgba(59,130,246,0.08) 0%, transparent 70%); }
-.section-finance-strategy .section-header{ border-left-color: var(--color-green); background: linear-gradient(90deg, rgba(16,185,129,0.08) 0%, transparent 70%); }
-.section-finance-risk .section-header    { border-left-color: var(--color-red);   background: linear-gradient(90deg, rgba(239,68,68,0.08) 0%, transparent 70%); }
+.section-body > ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px 0;
+}
+
+.section-body > ul > li {
+    padding: 6px 0 6px 18px;
+    position: relative;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.section-body > ul > li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    opacity: 0.5;
+    font-size: 12px;
+}
+
+/* Section color variants */
+.section-core .section-header    { border-left-color: var(--color-amber); background: linear-gradient(90deg, rgba(229,168,37,0.06) 0%, transparent 50%); }
+.section-events .section-header  { border-left-color: var(--color-blue);  background: linear-gradient(90deg, rgba(59,130,246,0.06) 0%, transparent 50%); }
+.section-projects .section-header{ border-left-color: var(--color-green); background: linear-gradient(90deg, rgba(16,185,129,0.06) 0%, transparent 50%); }
+.section-papers .section-header  { border-left-color: var(--color-cyan);  background: linear-gradient(90deg, rgba(6,182,212,0.06) 0%, transparent 50%); }
+.section-trends .section-header  { border-left-color: var(--color-purple);background: linear-gradient(90deg, rgba(168,85,247,0.06) 0%, transparent 50%); }
+.section-review .section-header  { border-left-color: var(--color-red);   background: linear-gradient(90deg, rgba(239,68,68,0.06) 0%, transparent 50%); }
+.section-default .section-header { border-left-color: var(--text-muted);  background: linear-gradient(90deg, rgba(100,116,139,0.04) 0%, transparent 50%); }
+
+.section-finance-macro .section-header   { border-left-color: var(--color-blue);  background: linear-gradient(90deg, rgba(59,130,246,0.06) 0%, transparent 50%); }
+.section-finance-strategy .section-header{ border-left-color: var(--color-green); background: linear-gradient(90deg, rgba(16,185,129,0.06) 0%, transparent 50%); }
+.section-finance-risk .section-header    { border-left-color: var(--color-red);   background: linear-gradient(90deg, rgba(239,68,68,0.06) 0%, transparent 50%); }
 
 /* ═══════════════════════════════════
-   ITEM BLOCKS
+   ITEM BLOCKS — Content Cards
    ═══════════════════════════════════ */
 
 .item-block {
     background: var(--bg-card);
     border: 1px solid var(--border-light);
     border-radius: var(--radius);
-    padding: 22px 24px;
-    margin-bottom: 14px;
+    padding: 20px 22px;
+    margin-bottom: 12px;
     position: relative;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.15s;
 }
 
 .item-block:hover {
-    border-color: rgba(249,115,22,0.25);
-    box-shadow: var(--shadow-sm);
+    border-color: rgba(229,168,37,0.2);
 }
 
 .item-num {
     position: absolute;
-    top: 16px;
-    right: 20px;
-    font-size: 36px;
+    top: 14px;
+    right: 18px;
+    font-size: 32px;
     font-weight: 900;
-    color: rgba(249,115,22,0.07);
+    color: rgba(229,168,37,0.05);
     font-variant-numeric: tabular-nums;
     line-height: 1;
     pointer-events: none;
@@ -283,65 +310,67 @@ body {
 }
 
 .item-block h3 {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 650;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     color: var(--text-primary);
     line-height: 1.5;
-    padding-right: 40px;
+    padding-right: 36px;
 }
 
 .item-block h4 {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
-    color: var(--text-secondary);
-    margin: 12px 0 4px;
+    color: var(--text-muted);
+    margin: 10px 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 .item-block p {
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     color: var(--text-secondary);
     line-height: 1.8;
-    font-size: 14px;
+    font-size: 13.5px;
 }
 
 .item-block ul {
     list-style: none;
     padding: 0;
-    margin: 0 0 8px 0;
+    margin: 0 0 6px 0;
 }
 
 .item-block ul li {
-    padding: 5px 0 5px 18px;
+    padding: 4px 0 4px 16px;
     position: relative;
     color: var(--text-secondary);
     line-height: 1.75;
-    font-size: 14px;
+    font-size: 13.5px;
 }
 
 .item-block ul li::before {
     content: '';
     position: absolute;
     left: 0;
-    top: 14px;
-    width: 5px;
-    height: 5px;
+    top: 13px;
+    width: 4px;
+    height: 4px;
     border-radius: 50%;
     background: var(--accent);
-    opacity: 0.6;
+    opacity: 0.4;
 }
 
 /* ═══════════════════════════════════
-   KEY-VALUE ROWS
+   KEY-VALUE ROWS — Structured Data
    ═══════════════════════════════════ */
 
 .kv-row {
     display: flex;
     gap: 8px;
-    padding: 5px 0;
-    font-size: 14px;
+    padding: 4px 0;
+    font-size: 13.5px;
     line-height: 1.75;
-    border-bottom: 1px solid var(--border-light);
+    border-bottom: 1px solid rgba(51,65,85,0.12);
 }
 
 .kv-row:last-of-type {
@@ -352,8 +381,8 @@ body {
     flex-shrink: 0;
     font-weight: 700;
     color: var(--accent-light);
-    min-width: 80px;
-    font-size: 13px;
+    min-width: 72px;
+    font-size: 12.5px;
 }
 
 .kv-value {
@@ -362,44 +391,51 @@ body {
 }
 
 /* ═══════════════════════════════════
-   CLAW REVIEW CARD
+   🦞 CLAW REVIEW — Brand Signature
+   Visual centerpiece of the theme
    ═══════════════════════════════════ */
 
 .claw-card {
     background: var(--claw-bg);
-    border: 1px solid rgba(249,115,22,0.3);
-    border-left: 4px solid var(--claw-border);
+    border: 1px solid rgba(229,168,37,0.2);
+    border-left: 3px solid var(--claw-border);
     border-radius: var(--radius);
-    padding: 16px 20px;
-    margin: 14px 0 6px;
+    padding: 14px 18px 14px 16px;
+    margin: 12px 0 4px;
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-claw);
 }
 
 .claw-card::before {
-    content: '\1F99E';
+    content: '';
     position: absolute;
-    right: 10px;
-    top: -6px;
-    font-size: 52px;
-    opacity: 0.05;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    background: radial-gradient(circle at 100% 0%, rgba(229,168,37,0.06) 0%, transparent 70%);
     pointer-events: none;
 }
 
 .claw-label {
-    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10.5px;
     font-weight: 800;
-    color: var(--accent);
+    color: var(--bg);
+    background: var(--accent);
+    padding: 1px 8px 2px;
+    border-radius: 3px;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 6px;
 }
 
 .claw-card p {
     color: var(--accent-light);
     font-size: 13.5px;
-    line-height: 1.75;
-    margin: 0 0 4px 0;
+    line-height: 1.78;
+    margin: 0 0 3px 0;
 }
 
 .claw-card p:last-child {
@@ -407,12 +443,12 @@ body {
 }
 
 /* ═══════════════════════════════════
-   TABLES
+   TABLES — Data Grid
    ═══════════════════════════════════ */
 
 .table-wrapper {
     overflow-x: auto;
-    margin: 12px 0;
+    margin: 10px 0;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-light);
 }
@@ -420,25 +456,25 @@ body {
 table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: 12.5px;
     line-height: 1.6;
 }
 
 thead th {
-    background: rgba(249,115,22,0.08);
+    background: rgba(229,168,37,0.06);
     color: var(--accent-light);
     font-weight: 700;
-    font-size: 12px;
-    letter-spacing: 0.03em;
+    font-size: 11px;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    padding: 10px 14px;
+    padding: 8px 12px;
     text-align: left;
-    border-bottom: 2px solid var(--border);
+    border-bottom: 1px solid var(--border);
     white-space: nowrap;
 }
 
 tbody td {
-    padding: 8px 14px;
+    padding: 7px 12px;
     color: var(--text-secondary);
     border-bottom: 1px solid var(--border-light);
     vertical-align: top;
@@ -449,7 +485,23 @@ tbody tr:last-child td {
 }
 
 tbody tr:hover {
-    background: rgba(249,115,22,0.03);
+    background: rgba(229,168,37,0.02);
+}
+
+/* ═══════════════════════════════════
+   DATA HIGHLIGHTS — Numeric Emphasis
+   ═══════════════════════════════════ */
+
+.item-block strong,
+.section-body strong {
+    color: var(--text-primary);
+    font-weight: 650;
+}
+
+.kv-value strong,
+.claw-card strong {
+    color: var(--accent-light);
+    font-weight: 700;
 }
 
 /* ═══════════════════════════════════
@@ -459,56 +511,52 @@ tbody tr:hover {
 a {
     color: var(--link);
     text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.15s;
+    transition: color 0.15s;
 }
-a:hover { border-bottom-color: var(--link); }
+a:hover { color: #93c5fd; }
 
-strong { color: var(--text-primary); font-weight: 600; }
-em { font-style: italic; color: var(--text-secondary); }
+em { font-style: italic; color: var(--text-muted); }
 
 /* ═══════════════════════════════════
-   FOOTER
+   FOOTER — Minimal Brand
    ═══════════════════════════════════ */
 
 .report-footer {
     text-align: center;
-    padding: 40px 24px 36px;
+    padding: 36px 24px 32px;
     color: var(--text-muted);
-    font-size: 12px;
+    font-size: 11.5px;
     line-height: 1.8;
-    position: relative;
+    border-top: 1px solid var(--border-light);
 }
 
 .footer-divider {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 14px;
-    margin-bottom: 14px;
+    gap: 12px;
+    margin-bottom: 10px;
 }
 
 .footer-divider::before,
 .footer-divider::after {
     content: '';
-    width: 60px;
+    width: 40px;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border));
-}
-.footer-divider::after {
-    background: linear-gradient(90deg, var(--border), transparent);
+    background: var(--border);
 }
 
 .report-footer .footer-brand {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 700;
     color: var(--text-secondary);
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
 }
 
 .report-footer .footer-sub {
-    font-size: 11.5px;
+    font-size: 11px;
     color: var(--text-muted);
+    margin-top: 2px;
 }
 
 /* ═══════════════════════════════════
@@ -516,13 +564,13 @@ em { font-style: italic; color: var(--text-secondary); }
    ═══════════════════════════════════ */
 
 .disclaimer {
-    margin-top: 48px;
-    padding: 14px 20px;
-    background: rgba(239,68,68,0.06);
-    border: 1px solid rgba(239,68,68,0.18);
+    margin-top: 40px;
+    padding: 12px 18px;
+    background: rgba(239,68,68,0.05);
+    border: 1px solid rgba(239,68,68,0.15);
     border-radius: var(--radius-sm);
     color: var(--text-muted);
-    font-size: 11.5px;
+    font-size: 11px;
     line-height: 1.8;
     text-align: center;
 }
@@ -532,20 +580,21 @@ em { font-style: italic; color: var(--text-secondary); }
    ═══════════════════════════════════ */
 
 @media (max-width: 640px) {
-    .report-header { padding: 40px 16px 32px; }
-    .report-header h1 { font-size: 24px; }
+    .report-header { padding: 36px 16px 28px; }
+    .report-header h1 { font-size: 22px; }
     .vol-badge { display: none; }
-    .container { padding: 24px 16px 60px; }
-    .item-block { padding: 16px 18px; }
-    .item-num { font-size: 28px; top: 12px; right: 14px; }
-    .stats-bar { gap: 8px; padding: 14px 16px; }
-    .stat-card { padding: 8px 14px; min-width: 64px; }
-    .stat-card .stat-num { font-size: 18px; }
-    .section-header { padding: 10px 14px; }
+    .container { padding: 20px 14px 60px; }
+    .item-block { padding: 16px 16px; }
+    .item-num { font-size: 26px; top: 10px; right: 12px; }
+    .stats-bar { gap: 0; }
+    .stat-card { padding: 10px 16px; min-width: 60px; }
+    .stat-card .stat-num { font-size: 16px; }
+    .section-header { padding: 8px 12px; }
+    .luna-logo-img { width: 64px; }
 }
 
 /* ═══════════════════════════════════
-   PRINT / PDF — preserve dark theme
+   PRINT / PDF — Preserve dark theme
    ═══════════════════════════════════ */
 
 @page {
@@ -558,12 +607,21 @@ em { font-style: italic; color: var(--text-secondary); }
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
         color-adjust: exact !important;
+        background: var(--bg) !important;
+        color: var(--text-primary) !important;
     }
+    .report-header { background: #111827 !important; }
     .report-header::after { display: none; }
     .luna-logo-img { filter: none; }
+    .item-block { background: var(--bg-card) !important; border-color: var(--border-light) !important; }
     .item-block:hover { border-color: var(--border-light); box-shadow: none; }
-    .stats-bar { backdrop-filter: none; -webkit-backdrop-filter: none; }
+    .stats-bar { background: var(--bg-surface) !important; }
+    .stat-card { background: transparent !important; }
+    .claw-card { box-shadow: none; background: rgba(229,168,37,0.04) !important; }
     .claw-card::before { display: none; }
+    .section-header { background: var(--accent-dim) !important; }
+    .report-footer { border-top-color: var(--border-light) !important; }
+    .disclaimer { background: rgba(239,68,68,0.05) !important; }
     tbody tr:hover { background: none; }
     .table-wrapper { page-break-inside: avoid; }
     .item-block { page-break-inside: avoid; }

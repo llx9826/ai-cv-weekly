@@ -70,11 +70,24 @@ def _resolve_request(hint: str, explicit_preset: str, config: dict) -> ReportReq
 def _ensure_preset(request: ReportRequest, config: dict) -> str:
     """Ensure a valid preset exists for the request.
 
-    If auto_created is True and no preset_name, dynamically create one
-    via the custom preset generator.
+    Resolution priority:
+      1. Exact preset match
+      2. Derive from existing preset (e.g. daily → weekly variant)
+      3. LLM-generated custom preset for unknown topics
+      4. Default fallback
     """
     if request.preset_name and request.preset_name in PRESETS:
         return request.preset_name
+
+    # Try deriving from an existing preset (e.g. stock_a_daily → stock_a_weekly)
+    if request.topic:
+        from brief.presets import derive_preset
+        for name, p in PRESETS.items():
+            if getattr(p, "topic", "") == request.topic:
+                derived = derive_preset(name, request.period)
+                if derived:
+                    print(f"🔄 派生 preset: {derived.name} (from {name})")
+                    return derived.name
 
     if request.auto_created and request.topic:
         period_label = "日报" if request.period == "daily" else "周报"

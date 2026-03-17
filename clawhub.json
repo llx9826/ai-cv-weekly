@@ -1,8 +1,8 @@
 {
   "name": "lunaclaw-brief",
-  "display_name": "LunaClaw Brief",
-  "version": "5.0.0",
-  "description": "Pluggable AI-powered report engine with three-level memory system, 7 presets (tech/finance/stock), 8 data sources, hybrid LLM intent router, streaming pipeline, cron scheduler, and multi-channel delivery.",
+  "display_name": "ClawCat Brief",
+  "version": "6.0.0",
+  "description": "Protocol-driven AI report engine: Scoring v2 (BM25+MMR), 4-checker grounding system, token budget manager, multi-model LLM router, async parallel fetch, three-level memory, 9 editors, 10 data sources (incl. RSS + OpenClaw skill adapter), configurable brand, financial-terminal dark theme.",
   "category": "productivity",
   "tags": [
     "report",

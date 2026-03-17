@@ -48,10 +48,12 @@ class Jinja2Renderer:
         preset: PresetConfig,
         time_range: str,
         stats: dict,
+        brand: dict | None = None,
     ) -> dict:
         template = self.env.get_template("report.html")
         sections = parse_sections(draft.markdown)
         luna_logo_b64 = self._load_logo_b64()
+        brand = brand or {}
 
         html = template.render(
             title=f"{preset.display_name} — {draft.issue_label}",
@@ -63,6 +65,9 @@ class Jinja2Renderer:
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M"),
             luna_logo_b64=luna_logo_b64,
             show_disclaimer=getattr(preset, "show_disclaimer", False),
+            brand_full_name=brand.get("full_name", "ClawCat Brief"),
+            brand_tagline=brand.get("tagline", "AI-Powered Report Engine"),
+            brand_author=brand.get("author", "by llx & Luna"),
         )
 
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")

@@ -70,6 +70,7 @@ class LLMClient:
 
         self.timeout = llm_config.get("timeout", 180)
         self.usage = LLMUsage()
+        self._model_routes = llm_config.get("model_routes", {})
 
         if not self.api_key:
             raise ValueError(
@@ -81,11 +82,25 @@ class LLMClient:
     def provider(self) -> str:
         return self._provider
 
+    def _resolve_model(self, task: str = "default") -> str:
+        """Route to different models based on task type.
+        
+        Config example in config.yaml:
+            llm:
+              model: gpt-4o-mini
+              model_routes:
+                classify: gpt-4o-mini
+                summarize: gpt-4o-mini
+                default: gpt-4o-mini
+        """
+        return self._model_routes.get(task, self.model)
+
     def chat(
         self,
         messages: list[dict],
         temperature: float = 0.7,
         max_tokens: int = 8000,
+        task: str = "default",
     ) -> str:
         """Standard multi-turn chat completion."""
         url = f"{self.base_url}/chat/completions"
@@ -94,7 +109,7 @@ class LLMClient:
             "Content-Type": "application/json",
         }
         payload = {
-            "model": self.model,
+            "model": self._resolve_model(task),
             "messages": messages,
             "temperature": temperature,
             "max_tokens": max_tokens,
@@ -122,6 +137,19 @@ class LLMClient:
             ],
             temperature=0.1,
             max_tokens=256,
+            task="classify",
+        )
+
+    def summarize(self, text: str, instruction: str = "Summarize concisely.") -> str:
+        """Summarize text using a cost-effective model route."""
+        return self.chat(
+            messages=[
+                {"role": "system", "content": instruction},
+                {"role": "user", "content": text},
+            ],
+            temperature=0.3,
+            max_tokens=1000,
+            task="summarize",
         )
 
     def stream(
@@ -129,6 +157,7 @@ class LLMClient:
         messages: list[dict],
         temperature: float = 0.7,
         max_tokens: int = 8000,
+        task: str = "default",
     ):
         """Streaming chat completion. Yields content chunks as they arrive."""
         url = f"{self.base_url}/chat/completions"
@@ -137,7 +166,7 @@ class LLMClient:
             "Content-Type": "application/json",
         }
         payload = {
-            "model": self.model,
+            "model": self._resolve_model(task),
             "messages": messages,
             "temperature": temperature,
             "max_tokens": max_tokens,

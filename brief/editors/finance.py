@@ -84,6 +84,8 @@ class FinanceWeeklyEditor(BaseEditor):
 
 【合规声明】末尾附加："本报告仅供参考，不构成投资建议。"
 
+{ self._engagement_rules(getattr(self.preset, 'target_audience', '')) }
+
 【字数要求】{word_lo}-{word_hi} 字，6 个章节缺一不可。"""
 
     def _build_user_prompt(
@@ -157,12 +159,14 @@ class FinanceDailyEditor(BaseEditor):
 - 今日关键信号（利多/利空/中性），用 `- ` 列出
 - 短期需关注的风险事件
 
+{ self._engagement_rules(getattr(self.preset, 'target_audience', '')) }
+
 【字数要求】{word_lo}-{word_hi} 字。"""
 
     def _build_user_prompt(
         self, items: list[Item], issue_label: str, user_hint: str
     ) -> str:
-        today = datetime.now().strftime("%Y-%m-%d")
+        today = self._today_context()
         prompt = f"""请生成 {issue_label} 期 {self.preset.display_name}。
 
 **日期**: {today}

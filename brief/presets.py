@@ -29,7 +29,7 @@ AI_CV_WEEKLY = PresetConfig(
     cycle="weekly",
     editor_type="tech_weekly",
     topic="ai",
-    sources=["github", "arxiv", "hackernews", "paperswithcode"],
+    sources=["github", "arxiv", "hackernews", "paperswithcode", "rss"],
     time_range_days=7,
     max_items=25,
     domain_keywords={
@@ -63,7 +63,7 @@ AI_DAILY = PresetConfig(
     cycle="daily",
     editor_type="tech_daily",
     topic="ai",
-    sources=["github", "arxiv", "hackernews"],
+    sources=["github", "arxiv", "hackernews", "rss"],
     time_range_days=1,
     max_items=10,
     domain_keywords={
@@ -95,7 +95,7 @@ FINANCE_WEEKLY = PresetConfig(
     cycle="weekly",
     editor_type="finance_weekly",
     topic="finance",
-    sources=["finnews", "hackernews", "yahoo_finance"],
+    sources=["finnews", "hackernews", "yahoo_finance", "rss"],
     time_range_days=7,
     max_items=20,
     domain_keywords={
@@ -130,7 +130,7 @@ FINANCE_DAILY = PresetConfig(
     cycle="daily",
     editor_type="finance_daily",
     topic="finance",
-    sources=["finnews", "hackernews", "yahoo_finance"],
+    sources=["finnews", "hackernews", "yahoo_finance", "rss"],
     time_range_days=1,
     max_items=10,
     domain_keywords={
@@ -161,7 +161,7 @@ STOCK_A_DAILY = PresetConfig(
     cycle="daily",
     editor_type="stock_a",
     topic="stock_a",
-    sources=["eastmoney", "xueqiu", "finnews"],
+    sources=["eastmoney", "xueqiu", "finnews", "rss"],
     time_range_days=1,
     max_items=15,
     domain_keywords={
@@ -192,7 +192,7 @@ STOCK_HK_DAILY = PresetConfig(
     cycle="daily",
     editor_type="stock_hk",
     topic="stock_hk",
-    sources=["finnews", "yahoo_finance", "xueqiu"],
+    sources=["finnews", "yahoo_finance", "xueqiu", "rss"],
     time_range_days=1,
     max_items=15,
     domain_keywords={
@@ -221,7 +221,7 @@ STOCK_US_DAILY = PresetConfig(
     cycle="daily",
     editor_type="stock_us",
     topic="stock_us",
-    sources=["yahoo_finance", "finnews"],
+    sources=["yahoo_finance", "finnews", "rss"],
     time_range_days=1,
     max_items=15,
     domain_keywords={
@@ -282,6 +282,74 @@ def _load_custom_presets() -> dict[str, PresetConfig]:
 # Load custom presets on import
 _custom = _load_custom_presets()
 PRESETS.update(_custom)
+
+
+def derive_preset(base_name: str, target_cycle: str) -> PresetConfig | None:
+    """Derive a daily/weekly variant from an existing preset.
+
+    For example, derive stock_a_weekly from stock_a_daily by adjusting
+    time_range_days, max_items, and target_word_count.
+    """
+    if base_name not in PRESETS:
+        return None
+
+    base = PRESETS[base_name]
+    if base.cycle == target_cycle:
+        return base
+
+    new_name = f"{base.topic}_{target_cycle}"
+    if new_name in PRESETS:
+        return PRESETS[new_name]
+
+    if target_cycle == "weekly":
+        derived = PresetConfig(
+            name=new_name,
+            display_name=base.display_name.replace("日报", "周报").replace("Daily", "Weekly"),
+            cycle="weekly",
+            editor_type=base.editor_type,
+            topic=base.topic,
+            sources=base.sources,
+            time_range_days=7,
+            max_items=min(base.max_items * 2, 30),
+            domain_keywords=dict(base.domain_keywords),
+            source_weights=dict(base.source_weights),
+            low_value_keywords=list(base.low_value_keywords),
+            sections=base.sections,
+            target_word_count=(3000, 5000),
+            tone=base.tone,
+            min_sections=max(base.min_sections, 4),
+            min_word_count=2500,
+            dedup_window_days=14,
+            template=base.template,
+            description=base.description.replace("日报", "周报").replace("daily", "weekly"),
+            show_disclaimer=base.show_disclaimer,
+        )
+    else:
+        derived = PresetConfig(
+            name=new_name,
+            display_name=base.display_name.replace("周报", "日报").replace("Weekly", "Daily"),
+            cycle="daily",
+            editor_type=base.editor_type,
+            topic=base.topic,
+            sources=base.sources,
+            time_range_days=1,
+            max_items=max(base.max_items // 2, 8),
+            domain_keywords=dict(base.domain_keywords),
+            source_weights=dict(base.source_weights),
+            low_value_keywords=list(base.low_value_keywords),
+            sections=base.sections,
+            target_word_count=(800, 1500),
+            tone=base.tone,
+            min_sections=2,
+            min_word_count=600,
+            dedup_window_days=3,
+            template=base.template,
+            description=base.description.replace("周报", "日报").replace("weekly", "daily"),
+            show_disclaimer=base.show_disclaimer,
+        )
+
+    PRESETS[new_name] = derived
+    return derived
 
 
 def get_preset(name: str) -> PresetConfig:

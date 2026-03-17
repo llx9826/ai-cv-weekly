@@ -1,14 +1,16 @@
 """LunaClaw Brief — Report Pipeline
 
-8-stage pipeline with middleware hooks, structured logging, and
-pluggable three-level memory system:
+9-stage pipeline with middleware hooks, structured logging, grounding
+checks, token budget management, and pluggable three-level memory:
 
-  Fetch → Score → Select → Dedup(Memory) → Edit(LLM) → Quality → Render → Output
+  Fetch → Score → Select → Dedup(Memory) → Edit(LLM) → Ground → Quality → Render → Output
 
-Memory integration (via MemoryManager):
-  L1 ItemStore    — item_id dedup during Dedup phase
-  L2 TopicStore   — topic diversity reorder during Dedup phase
-  L3 ContentStore — claim recall/save around Edit phase
+Key integrations:
+  - Async parallel fetch (asyncio.gather)
+  - Three-level memory (ItemStore / TopicStore / ContentStore)
+  - Grounding system (temporal, entity, numeric, structure checks)
+  - Token budget manager (Map-Reduce batching)
+  - Multi-model LLM router
 
 Supports both synchronous (run) and streaming (run_stream) execution.
 """
@@ -26,6 +28,8 @@ from brief.scoring import Scorer, Selector
 from brief.memory import MemoryManager
 from brief.editors import create_editor
 from brief.quality import QualityChecker
+from brief.grounding import GroundingPipeline
+from brief.token_budget import TokenBudget
 from brief.renderer.jinja2 import Jinja2Renderer
 from brief.sender import EmailSender, WebhookSender
 from brief.middleware import (
@@ -127,21 +131,28 @@ class ReportPipeline:
         print(f"🦞 LunaClaw Brief — {p.display_name}")
         print(f"{'='*50}")
 
-        # ── Phase 1: Fetch ──
+        # ── Phase 1: Fetch (async parallel) ──
         self._chain.fire_phase_start("fetch", ctx)
-        log.info(f"Phase 1: Fetch — {len(p.sources)} sources")
+        log.info(f"Phase 1: Fetch — {len(p.sources)} sources (parallel)")
         sources = create_sources(p.sources, self.config)
-        all_items = []
-        sources_used = []
-        for source in sources:
+
+        async def _safe_fetch(source):
             try:
                 items = await source.fetch(since, now)
-                if items:
-                    all_items.extend(items)
-                    sources_used.append(source.name)
-                    log.info(f"  ✅ {source.name}", count=len(items))
+                return source.name, items or []
             except Exception as e:
                 log.warn(f"  ❌ {source.name}", error=str(e)[:60])
+                return source.name, []
+
+        fetch_results = await asyncio.gather(*[_safe_fetch(s) for s in sources])
+
+        all_items = []
+        sources_used = []
+        for name, items in fetch_results:
+            if items:
+                all_items.extend(items)
+                sources_used.append(name)
+                log.info(f"  ✅ {name}", count=len(items))
         ctx.phase_counts["fetch"] = len(all_items)
         self._chain.fire_phase_end("fetch", ctx)
         log.info("Fetch complete", total=len(all_items), sources=len(sources_used))
@@ -201,11 +212,28 @@ class ReportPipeline:
         self._chain.fire_phase_end("edit", ctx)
         log.info("Edit complete", chars=draft.word_count)
 
-        # ── Phase 6: Quality ──
+        # ── Phase 5.5: Token Budget Enforcement ──
+        if p.max_word_count > 0:
+            budget = TokenBudget(
+                context_window=self.config.get("llm", {}).get("context_window", 128000),
+                output_reserve=self.config.get("llm", {}).get("output_reserve", 8000),
+            )
+            draft.markdown = budget.enforce_output_limit(draft.markdown, p.max_word_count)
+            log.info("Token budget enforced", max_words=p.max_word_count, actual=len(draft.markdown))
+
+        # ── Phase 6: Grounding + Quality ──
         self._chain.fire_phase_start("quality", ctx)
+
+        grounding = GroundingPipeline.create_default()
+        gr = grounding.run(draft.markdown, deduped)
+        log.info(f"Phase 6a: Grounding — {'PASS' if gr.passed else 'WARN'}", score=f"{gr.score:.0%}")
+        for gi in gr.issues:
+            if gi.severity in ("error", "warning"):
+                log.warn(f"  ⚠️ [{gi.checker}] {gi.message}")
+
         checker = QualityChecker(p)
         qr = checker.check(draft.markdown)
-        log.info(f"Phase 6: Quality — {'PASS' if qr.passed else 'FAIL'}", score=f"{qr.score:.0%}")
+        log.info(f"Phase 6b: Quality — {'PASS' if qr.passed else 'FAIL'}", score=f"{qr.score:.0%}")
         if qr.issues:
             for issue in qr.issues:
                 log.warn(f"  ⚠️ {issue}")
@@ -237,7 +265,8 @@ class ReportPipeline:
             "selected_items": len(deduped),
             "word_count": draft.word_count,
         }
-        render_result = renderer.render(draft, p, time_range, stats)
+        brand = self.config.get("brand", {})
+        render_result = renderer.render(draft, p, time_range, stats, brand=brand)
         self._chain.fire_phase_end("render", ctx)
         log.info("Phase 7: Render", html=render_result["html_path"])
         if render_result.get("pdf_path"):
@@ -371,7 +400,8 @@ class ReportPipeline:
             "selected_items": len(deduped),
             "word_count": draft.word_count,
         }
-        render_result = renderer.render(draft, p, time_range, stats)
+        brand = self.config.get("brand", {})
+        render_result = renderer.render(draft, p, time_range, stats, brand=brand)
 
         if not is_rerun:
             memory.save_all(p.name, issue_label, deduped, draft.markdown)

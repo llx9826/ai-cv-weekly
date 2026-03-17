@@ -101,7 +101,7 @@ class AShareEditor(BaseEditor):
 【字数要求】{word_lo}-{word_hi} 字，5 个章节缺一不可。"""
 
     def _build_user_prompt(self, items: list[Item], issue_label: str, user_hint: str) -> str:
-        today = datetime.now().strftime("%Y-%m-%d")
+        today = self._today_context()
         prompt = f"请生成 {issue_label} 期 {self.preset.display_name}。\n\n"
         prompt += f"**日期**: {today}\n**素材数**: {len(items)} 条\n"
         if user_hint:
@@ -165,7 +165,7 @@ class HKStockEditor(BaseEditor):
 【字数要求】{word_lo}-{word_hi} 字，5 个章节缺一不可。"""
 
     def _build_user_prompt(self, items: list[Item], issue_label: str, user_hint: str) -> str:
-        today = datetime.now().strftime("%Y-%m-%d")
+        today = self._today_context()
         prompt = f"请生成 {issue_label} 期 {self.preset.display_name}。\n\n"
         prompt += f"**日期**: {today}\n**素材数**: {len(items)} 条\n"
         if user_hint:
@@ -230,7 +230,7 @@ class USStockEditor(BaseEditor):
 【字数要求】{word_lo}-{word_hi} 字，5 个章节缺一不可。"""
 
     def _build_user_prompt(self, items: list[Item], issue_label: str, user_hint: str) -> str:
-        today = datetime.now().strftime("%Y-%m-%d")
+        today = self._today_context()
         prompt = f"请生成 {issue_label} 期 {self.preset.display_name}。\n\n"
         prompt += f"**日期**: {today}\n**素材数**: {len(items)} 条\n"
         if user_hint:

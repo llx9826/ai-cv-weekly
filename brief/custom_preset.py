@@ -22,7 +22,8 @@ _SYSTEM_PROMPT = """You are a report configuration generator for LunaClaw Brief.
 Given a user's description of their reporting needs, generate a PresetConfig JSON.
 
 Available source adapters: {sources}
-Available editor types: tech_weekly, tech_daily, finance_weekly, finance_daily, stock_a, stock_hk, stock_us
+Available editor types: tech_weekly, tech_daily, finance_weekly, finance_daily, stock_a, stock_hk, stock_us, generic_daily, generic_weekly
+Note: For unknown domains, prefer generic_daily or generic_weekly editor types.
 
 Return ONLY valid JSON with these fields:
 {{
@@ -44,7 +45,10 @@ Return ONLY valid JSON with these fields:
   "dedup_window_days": 3-30,
   "template": "report",
   "description": "one-line description of this preset",
-  "show_disclaimer": true/false
+  "show_disclaimer": true/false,
+  "topic": "topic_family_key (ai, finance, stock_a, stock_hk, stock_us, or new_topic)",
+  "scoring_weights": {{"bm25": 0.35, "recency": 0.25, "engagement": 0.25, "source": 0.15}},
+  "target_audience": "one-line description of target reader"
 }}
 
 Rules:

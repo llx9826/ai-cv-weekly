@@ -46,8 +46,8 @@ TOPIC_PATTERNS: list[tuple[str, re.Pattern]] = [
 # ── Period keyword table ──────────────────────────────────────────
 
 PERIOD_PATTERNS: list[tuple[str, re.Pattern]] = [
-    ("weekly",  re.compile(r"周报|weekly|每周|本周|这周|一周", re.I)),
-    ("daily",   re.compile(r"日报|daily|每日|今日|今天|每天", re.I)),
+    ("weekly",  re.compile(r"周报|weekly|每周|本周|这周|一周|上周|最近\s*一?\s*周|近一周", re.I)),
+    ("daily",   re.compile(r"日报|daily|每日|今日|今天|每天|昨天|当天|当日", re.I)),
 ]
 
 
@@ -158,15 +158,8 @@ class IntentParser:
         return cleaned if len(cleaned) >= 2 else ""
 
     def _resolve_preset(self, topic: str, period: str) -> str:
-        """Look up preset by (topic, period). Falls back to any matching topic."""
-        exact = self._topic_index.get((topic, period))
-        if exact:
-            return exact
-
-        # Try the other period as fallback
-        other_period = "weekly" if period == "daily" else "daily"
-        fallback = self._topic_index.get((topic, other_period))
-        return fallback or ""
+        """Look up preset by (topic, period). Returns empty if no exact match."""
+        return self._topic_index.get((topic, period)) or ""
 
     def _classify_with_llm(self, hint: str) -> ReportRequest | None:
         """LLM fallback for ambiguous inputs."""

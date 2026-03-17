@@ -78,7 +78,7 @@ class GenericDailyEditor(BaseEditor):
     def _build_user_prompt(
         self, items: list[Item], issue_label: str, user_hint: str
     ) -> str:
-        today = datetime.now().strftime("%Y-%m-%d")
+        today = self._today_context()
         p = self.preset
 
         prompt = f"""请生成 {issue_label} 期 {p.display_name}。

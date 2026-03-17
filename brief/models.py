@@ -153,5 +153,13 @@ class PresetConfig:
     description: str = ""
     show_disclaimer: bool = False
 
-    # Agent routing: topic family identifier for intent-based matching
+    # Agent routing
     topic: str = ""
+
+    # Scoring v2 (all optional with defaults)
+    scoring_weights: dict = field(default_factory=dict)
+    decay_half_life_hours: float = 24.0
+    selection_strategy: str = "mmr"
+    mmr_lambda: float = 0.7
+    max_word_count: int = 0
+    target_audience: str = ""

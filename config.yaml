@@ -1,6 +1,12 @@
 # LunaClaw Brief — Global Configuration
 # Sensitive info goes in config.local.yaml (gitignored)
 
+brand:
+  name: "ClawCat"
+  full_name: "ClawCat Brief"
+  tagline: "AI-Powered Report Engine"
+  author: "by llx & Luna"
+
 llm:
   base_url: "https://coding.dashscope.aliyuncs.com/v1"
   model: "kimi-k2.5"
@@ -14,6 +20,43 @@ proxy:
   enabled: false
   http: ""
   https: ""
+
+# Data source configuration
+sources_config:
+  rss:
+    max_per_feed: 10
+    feeds:
+      # Tech
+      - url: "https://feeds.arstechnica.com/arstechnica/technology-lab"
+        label: "Ars Technica"
+      - url: "https://www.wired.com/feed/rss"
+        label: "Wired"
+      - url: "https://techcrunch.com/feed/"
+        label: "TechCrunch"
+      - url: "https://www.theverge.com/rss/index.xml"
+        label: "The Verge"
+      - url: "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml"
+        label: "NYT Tech"
+      # Finance (enriched via openclaw-feeds catalog)
+      - url: "https://feeds.bloomberg.com/markets/news.rss"
+        label: "Bloomberg"
+      - url: "https://feeds.content.dowjones.io/public/rss/mw_topstories"
+        label: "MarketWatch"
+      - url: "https://www.cnbc.com/id/100003114/device/rss/rss.html"
+        label: "CNBC"
+      - url: "https://www.ft.com/?format=rss"
+        label: "Financial Times"
+      - url: "https://feeds.reuters.com/reuters/businessNews"
+        label: "Reuters Business"
+  skill:
+    timeout: 30
+    skills: []
+    # Example: use @nesdeq/openclaw-feeds for 26+ finance RSS feeds
+    # - name: "@nesdeq/openclaw-feeds"
+    #   function: "fetch_feeds"
+    #   params:
+    #     category: "finance"
+    #     limit: 30
 
 email:
   smtp_host: "smtp.qq.com"

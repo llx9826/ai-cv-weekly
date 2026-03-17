@@ -53,12 +53,14 @@ class DailyEditor(BaseEditor):
 - 一句话即可，但必须有态度
 - 禁止空话："值得关注""具有重要意义"
 
+{ self._engagement_rules(getattr(self.preset, 'target_audience', '')) }
+
 【字数要求】总字数 {word_lo}-{word_hi} 字。"""
 
     def _build_user_prompt(
         self, items: list[Item], issue_label: str, user_hint: str
     ) -> str:
-        today = datetime.now().strftime("%Y-%m-%d")
+        today = self._today_context()
 
         prompt = f"""请生成 {issue_label} 期 {self.preset.display_name}。
 

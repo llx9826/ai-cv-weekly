@@ -11,10 +11,13 @@ from __future__ import annotations
 import time
 import random
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import Generator
 
 from brief.models import Item, ReportDraft, PresetConfig
 from brief.llm import LLMClient
+
+_WEEKDAY_CN = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
 
 
 class BaseEditor(ABC):
@@ -123,6 +126,24 @@ class BaseEditor(ABC):
             parts.append(TopicStore.format_constraints(recent_topics))
 
         return "".join(parts)
+
+    @staticmethod
+    def _today_context() -> str:
+        """Date string with weekday for LLM prompt (prevents weekday hallucination)."""
+        now = datetime.now()
+        return f"{now.strftime('%Y-%m-%d')}（{_WEEKDAY_CN[now.weekday()]}）"
+
+    @staticmethod
+    def _engagement_rules(target_audience: str = "") -> str:
+        """Content engagement enhancement rules for LLM prompts."""
+        rules = """【内容吸引力要求】
+- Hook 开头：每个章节第一句用数据、反常识或冲突开场
+- 对比锚定：比较时给参照物（"相比 GPT-4o 快 3 倍"而非"速度快"）
+- 数据高亮：关键数字用 **加粗**（如 **+12.5%**、**$3.2B**）
+- 悬念收尾：章节末尾留一个值得关注的后续问题"""
+        if target_audience:
+            rules += f"\n- 目标读者：{target_audience}，用该受众熟悉的术语和视角"
+        return rules
 
     @staticmethod
     def _clean_markdown(response: str) -> str:

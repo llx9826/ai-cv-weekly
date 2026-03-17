@@ -1,7 +1,8 @@
-"""LunaClaw Brief — Source Factory (Registry-driven)
+"""ClawCat Brief — Source Factory (Registry-driven)
 
 All sources are discovered via @register_source decorator.
 Import each module to trigger registration.
+10 built-in sources + extensible via @register_source.
 """
 
 import brief.sources.github          # noqa: F401
@@ -12,6 +13,8 @@ import brief.sources.finnews         # noqa: F401
 import brief.sources.yahoo_finance   # noqa: F401
 import brief.sources.eastmoney       # noqa: F401
 import brief.sources.xueqiu          # noqa: F401
+import brief.sources.rss             # noqa: F401
+import brief.sources.skill_source    # noqa: F401
 
 from brief.sources.base import BaseSource
 from brief.registry import SourceRegistry

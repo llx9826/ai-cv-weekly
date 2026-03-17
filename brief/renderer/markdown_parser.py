@@ -115,7 +115,7 @@ def _match_style(title: str) -> dict:
 
 def _render_content(content: str) -> str:
     """Convert Markdown content block to HTML."""
-    content = re.sub(r"\n+---+\n*", "\n\n", content)
+    content = re.sub(r"(?:^|\n+)---+\s*(?:\n|$)", "\n\n", content)
 
     if "### " in content:
         blocks = re.split(r"\n+(?=### )", content.strip())

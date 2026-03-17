@@ -92,6 +92,8 @@ class WeeklyEditor(BaseEditor):
 2. 至少两点具体问题/局限/适用边界
 3. 一句"适合谁/不适合谁"的明确判断
 
+{ self._engagement_rules(getattr(self.preset, 'target_audience', '')) }
+
 【字数要求】总字数 {word_lo}-{word_hi} 字，必须包含全部 6 个章节。"""
 
     def _build_user_prompt(

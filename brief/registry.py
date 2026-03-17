@@ -56,8 +56,10 @@ class _Registry:
 SourceRegistry = _Registry("Source")
 EditorRegistry = _Registry("Editor")
 RendererRegistry = _Registry("Renderer")
+CheckerRegistry = _Registry("Checker")
 
 # 装饰器快捷方式
 register_source = SourceRegistry.register
 register_editor = EditorRegistry.register
 register_renderer = RendererRegistry.register
+register_checker = CheckerRegistry.register
