@@ -53,8 +53,12 @@ class FinanceWeeklyEditor(BaseEditor):
 - 有立场、有判断、有风险提示
 - 锐评要有投资视角，说清机会和风险
 
-【周报结构 — 严格按以下章节】
-## 一、本周市场核心判断
+【周报结构 — 严格按以下章节顺序输出】
+
+## 📌 核心判断
+> 一句话概括本周市场最重要的结构性变化（不超过 30 字，必须是判断）
+
+## 一、本周市场核心结论
 ## 二、宏观与政策动态
 ## 三、行业热点与公司事件
 ## 四、科技与金融交叉动态
@@ -63,7 +67,10 @@ class FinanceWeeklyEditor(BaseEditor):
 
 每个章节要求：
 
-**核心判断**（5-8 条，用 `- ` bullet points，每条含方向性结论 + 支撑逻辑）
+**核心结论**（3-5 条，每条必须包含三要素）：
+- **结论**：方向性判断
+- **依据**：支撑数据或事件
+- **约束**：什么情况下此结论不成立
 
 **宏观与政策**（3-5 条事件，每条用 `### N. 事件标题`）：
 - **事件概要**：发生了什么
@@ -91,7 +98,7 @@ class FinanceWeeklyEditor(BaseEditor):
 
 { self._engagement_rules(getattr(self.preset, 'target_audience', '')) }
 
-【字数要求】{word_lo}-{word_hi} 字，6 个章节缺一不可。"""
+【字数要求】{word_lo}-{word_hi} 字，必须包含全部章节（含📌核心判断）。"""
 
     def _build_user_prompt(
         self, items: list[Item], issue_label: str, user_hint: str
@@ -123,11 +130,12 @@ class FinanceWeeklyEditor(BaseEditor):
         word_lo, word_hi = self.preset.target_word_count
         prompt += f"""
 【生成要求】:
-1. 全部 6 个章节必须完整
-2. 总字数 {word_lo}-{word_hi} 字
-3. 严格使用 ### N. 格式标记每个条目
-4. 每条行业热点必须带 🦞 Claw 锐评
-5. 投资策略建议要分短期/中期
+1. 必须以📌核心判断开头，全部章节完整
+2. 核心结论每条必须有"结论+依据+约束"三要素
+3. 总字数 {word_lo}-{word_hi} 字
+4. 严格使用 ### N. 格式标记每个条目
+5. 每条行业热点必须带 🦞 Claw 锐评
+6. 投资策略建议要分短期/中期
 
 请生成金融周报："""
         return prompt
@@ -151,9 +159,14 @@ class FinanceDailyEditor(BaseEditor):
 
 {_SCHEMA_RULES}
 
-【日报结构】
+【日报结构 — 严格按以下章节顺序输出】
+
+## 📌 核心判断
+> 一句话概括今日市场最重要的变化（不超过 30 字，必须是判断）
+
 ## 今日市场要闻
-## 投资信号与风险提示
+## 投资信号与策略
+## 风险提示
 
 **今日市场要闻**：
 - 3-5 条最重要的金融事件
@@ -161,9 +174,13 @@ class FinanceDailyEditor(BaseEditor):
 - 每条 80-120 字，含 **事件概要**：字段
 - 附带 `**🦞 Claw 锐评**：` 一句话判断
 
-**投资信号与风险提示**：
+**投资信号与策略**：
+- 当前阶段（进攻 / 防守 / 观察）
 - 今日关键信号（利多/利空/中性），用 `- ` 列出
-- 短期需关注的风险事件
+- 短期方向建议
+
+**风险提示**：
+- 短期需关注的风险事件（最多 3 条，必须具体）
 
 { self._engagement_rules(getattr(self.preset, 'target_audience', '')) }
 

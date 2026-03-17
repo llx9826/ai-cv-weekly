@@ -50,24 +50,23 @@ class Jinja2Renderer:
         stats: dict,
         brand: dict | None = None,
         citations: list | None = None,
+        citation_sources: list | None = None,
     ) -> dict:
-        template = self.env.get_template("report.html")
+        template_name = getattr(preset, "template", "report") + ".html"
+        try:
+            template = self.env.get_template(template_name)
+        except Exception:
+            template = self.env.get_template("report.html")
+
         sections = parse_sections(draft.markdown)
         luna_logo_b64 = self._load_logo_b64()
         brand = brand or {}
 
-        citation_list = []
-        if citations:
-            for i, c in enumerate(citations, 1):
-                citation_list.append({
-                    "idx": i,
-                    "claim": getattr(c, "claim", str(c)),
-                    "evidence": getattr(c, "evidence", ""),
-                    "source_name": getattr(c, "source_name", ""),
-                    "source_url": getattr(c, "source_url", ""),
-                    "fact_key": getattr(c, "fact_key", ""),
-                    "confidence": getattr(c, "confidence", 0),
-                })
+        citation_note = ""
+        if citation_sources:
+            citation_note = f"本报告数据基于 {'、'.join(citation_sources)} 等来源验证"
+
+        theme = getattr(preset, "theme", "light")
 
         html = template.render(
             title=f"{preset.display_name} — {draft.issue_label}",
@@ -82,11 +81,13 @@ class Jinja2Renderer:
             brand_full_name=brand.get("full_name", "ClawCat Brief"),
             brand_tagline=brand.get("tagline", "AI-Powered Report Engine"),
             brand_author=brand.get("author", "by llx & Luna"),
-            citations=citation_list,
+            citation_note=citation_note,
+            theme=theme,
         )
 
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        prefix = preset.name
+        safe_label = draft.issue_label.replace(" ", "_").replace("/", "-")
+        prefix = f"{preset.name}_{safe_label}"
         html_path = self.output_dir / f"{prefix}_{ts}.html"
         md_path = self.output_dir / f"{prefix}_{ts}.md"
         pdf_path: Optional[Path] = None

@@ -38,6 +38,7 @@ from brief.grounding import GroundingPipeline
 from brief.token_budget import TokenBudget
 from brief.gate import QualityGate
 from brief.citation import CitationEngine
+from brief.sanitizer import ReportSanitizer
 from brief.observability import PipelineTracer
 from brief.eval.runner import EvalRunner
 from brief.renderer.jinja2 import Jinja2Renderer
@@ -360,6 +361,9 @@ class ReportPipeline:
                 "trace_path": trace_path,
             }
 
+        # ── Phase 6b: Sanitize (strip internal artifacts) ──
+        draft.markdown = ReportSanitizer.sanitize(draft.markdown)
+
         # ── Phase 7: Citation (Claim → Evidence → Source) ──
         self._chain.fire_phase_start("citation", ctx)
         tracer.phase_start("citation")
@@ -389,18 +393,20 @@ class ReportPipeline:
         output_dir = self.project_root / "output"
         renderer = Jinja2Renderer(template_dir, static_dir, output_dir)
 
-        stats = {
-            "total_items": len(all_items),
-            "sources_used": len(sources_used),
-            "selected_items": len(deduped),
-            "word_count": draft.word_count,
-            "gate_verdict": gate_result.verdict.value,
-            "grounding_score": f"{gr.score:.0%}",
-            "citations": citation_summary,
-            "eval_score": f"{eval_result.overall_score:.0%}",
+        reader_stats = {
+            "信息源": f"{len(sources_used)} 个",
+            "筛选素材": f"{len(deduped)} 条",
+            "报告字数": f"{draft.word_count}",
         }
+        citation_sources = list({
+            c.source_name for c in citations
+            if c.confidence >= 0.7 and c.source_name and c.source_name != "ungrounded"
+        })[:5]
         brand = self.config.get("brand", {})
-        render_result = renderer.render(draft, p, time_range, stats, brand=brand, citations=citations)
+        render_result = renderer.render(
+            draft, p, time_range, reader_stats, brand=brand,
+            citations=citations, citation_sources=citation_sources,
+        )
         tracer.phase_end("render")
         self._chain.fire_phase_end("render", ctx)
 
@@ -610,6 +616,9 @@ class ReportPipeline:
             }
             return
 
+        # Phase 6b: Sanitize
+        draft.markdown = ReportSanitizer.sanitize(draft.markdown)
+
         # Phase 7: Citation
         tracer.phase_start("citation")
         citation_engine = CitationEngine()
@@ -645,17 +654,20 @@ class ReportPipeline:
         output_dir = self.project_root / "output"
         renderer = Jinja2Renderer(template_dir, static_dir, output_dir)
 
-        stats = {
-            "total_items": len(all_items),
-            "sources_used": len(sources_used),
-            "selected_items": len(deduped),
-            "word_count": draft.word_count,
-            "gate_verdict": gate_result.verdict.value,
-            "citations": citation_summary,
-            "eval_score": f"{eval_result.overall_score:.0%}",
+        reader_stats = {
+            "信息源": f"{len(sources_used)} 个",
+            "筛选素材": f"{len(deduped)} 条",
+            "报告字数": f"{draft.word_count}",
         }
+        stream_citation_sources = list({
+            c.source_name for c in citations
+            if c.confidence >= 0.7 and c.source_name and c.source_name != "ungrounded"
+        })[:5]
         brand = self.config.get("brand", {})
-        render_result = renderer.render(draft, p, time_range, stats, brand=brand, citations=citations)
+        render_result = renderer.render(
+            draft, p, time_range, reader_stats, brand=brand,
+            citations=citations, citation_sources=stream_citation_sources,
+        )
         tracer.phase_end("render")
 
         # Save citation + eval sidecar

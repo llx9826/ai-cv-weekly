@@ -211,6 +211,9 @@ class PresetConfig:
     eval_dimensions: list = field(default_factory=list)
     eval_weights: dict = field(default_factory=dict)
 
+    # Theme: DaisyUI theme (light | dark | corporate | business)
+    theme: str = "light"
+
 
 # ────────────────────────────────────────────
 # Quality Gate

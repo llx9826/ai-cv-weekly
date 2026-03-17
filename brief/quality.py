@@ -4,6 +4,15 @@ import re
 
 from brief.models import PresetConfig, QualityResult
 
+_EMPTY_PHRASES = [
+    "值得关注", "有待观察", "具有重要意义", "推动行业发展",
+    "持续关注", "密切关注", "有望", "或将",
+    "进一步推动", "不断深化", "引发广泛关注",
+    "备受瞩目", "意义重大", "前景广阔",
+]
+
+_EMPTY_PHRASE_THRESHOLD = 3
+
 
 class QualityChecker:
     """Validates Markdown structure and quality according to preset configuration."""
@@ -58,9 +67,35 @@ class QualityChecker:
             else:
                 issues.append(f"条目不足: {item_count} < 5")
 
+        # 6. Empty-talk / boilerplate detection
+        checks_total += 1
+        empty_count = sum(markdown.count(p) for p in _EMPTY_PHRASES)
+        if empty_count <= _EMPTY_PHRASE_THRESHOLD:
+            checks_passed += 1
+        else:
+            issues.append(f"模板化表达过多: 检测到 {empty_count} 处空话")
+
+        # 7. Hero summary presence
+        checks_total += 1
+        has_hero = bool(re.search(r"^##\s.*核心判断", markdown, re.MULTILINE))
+        if has_hero:
+            checks_passed += 1
+        else:
+            issues.append("缺少核心判断区域（hero_summary）")
+
+        # 8. Strategy section presence
+        checks_total += 1
+        has_strategy = bool(re.search(
+            r"^##\s.*(?:策略|趋势策略|Claw 策略|投资策略)", markdown, re.MULTILINE
+        ))
+        if has_strategy:
+            checks_passed += 1
+        else:
+            issues.append("缺少策略层章节")
+
         score = checks_passed / checks_total if checks_total > 0 else 0
         return QualityResult(
-            passed=score >= 0.7,
+            passed=score >= 0.6,
             score=score,
             issues=issues,
         )
